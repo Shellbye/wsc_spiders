@@ -55,11 +55,11 @@ IMAGES_THUMBS = {
     'big': (270, 270),
 }
 
-try:
-    import sys
-    sys.path.append("..")
-    from local_settings import CHECKED
-    print CHECKED
-except ImportError:
-    print "error"
-    pass
+# try:
+#     import sys
+#     sys.path.append("..")
+#     from local_settings import CHECKED
+#     print CHECKED
+# except ImportError:
+#     print "error"
+#     pass
