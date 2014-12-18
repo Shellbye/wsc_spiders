@@ -54,3 +54,12 @@ IMAGES_THUMBS = {
     'small': (50, 50),
     'big': (270, 270),
 }
+
+try:
+    import sys
+    sys.path.append("..")
+    from local_settings import CHECKED
+    print CHECKED
+except ImportError:
+    print "error"
+    pass
