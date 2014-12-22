@@ -40,3 +40,4 @@ nosetests.xml
 log_info.txt
 log/
 *.log
+setup.py
