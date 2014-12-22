@@ -32,9 +32,9 @@ class UserProfileSpider(scrapy.Spider):
     def parse_follower(self, response):
         followers = response.xpath("//div[@class='zm-profile-card zm-profile-section-item zg-clear no-hovercard']")
         for f in followers:
-            id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            print id
-        return
+            user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
+            print user_data_id
+            yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
 
     @staticmethod
     def get_more_followers():
@@ -59,22 +59,70 @@ class UserProfileSpider(scrapy.Spider):
         pass
 
     def parse_profile(self, response):
-        id = response.xpath("//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id")[0].extract()
-        name = response.xpath("//span[@class='name']/text()")[0].extract()
-        bio = response.xpath("//span[@class='bio']/text()")[0].extract()
-        location = response.xpath("//span[contains(@class,'location')]/text()")[0].extract()
-        business = response.xpath("//span[contains(@class,'business')]/a/text()")[0].extract()
-        business_topic_url = "http://www." + self.allowed_domains[0] + \
-                             response.xpath("//span[contains(@class,'business')]/a/@href")[0].extract()
-        gender = response.xpath("//span[contains(@class,'gender')]/i/@class")[0].extract()
+        user_data_id_selector = response.xpath("//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id")
+        if user_data_id_selector:
+            user_data_id = user_data_id_selector[0].extract()
+        else:
+            user_data_id = None
+        name_selector = response.xpath("//div[@class='title-section ellipsis']/span[@class='name']/text()")
+        if name_selector:
+            name = name_selector[0].extract()
+        else:
+            name = None
+        bio_selector = response.xpath("//span[@class='bio']/text()")
+        if bio_selector:
+            bio = bio_selector[0].extract()
+        else:
+            bio = None
+        location_selector = response.xpath("//span[contains(@class,'location')]/text()")
+        if location_selector:
+            location = location_selector[0].extract()
+        else:
+            location = None
+        business_selector = response.xpath("//span[contains(@class,'business')]/a/text()")
+        if business_selector:
+            business = business_selector[0].extract()
+        else:
+            business = None
+        business_topic_url_selector = response.xpath("//span[contains(@class,'business')]/a/@href")
+        if business_topic_url_selector:
+            business_topic_url = business_topic_url_selector[0].extract()
+        else:
+            business_topic_url = None
+        gender_selector = response.xpath("//span[contains(@class,'gender')]/i/@class")
+        if gender_selector:
+            gender = gender_selector[0].extract()
         # icon icon-profile-female
         # icon icon-profile-male
-        employment = response.xpath("//span[contains(@class,'employment')]/text()")[0].extract()
-        position = response.xpath("//span[contains(@class,'position')]/text()")[0].extract()
-        description = response.xpath("//span[contains(@class,'description')]//span//text()")[0].extract().strip()
-        agree_count = response.xpath("//span[@class='zm-profile-header-user-agree']//strong/text()")[0].extract()
-        thanks_count = response.xpath("//span[@class='zm-profile-header-user-thanks']//strong/text()")[0].extract()
-        item = ZhiHuUserProfile(id=id, name=name, bio=bio, location=location, business=business, business_topic_url=business_topic_url,
+        else:
+            gender = None
+        employment_selector = response.xpath("//span[contains(@class,'employment')]/text()")
+        if employment_selector:
+            employment = employment_selector[0].extract()
+        else:
+            employment = None
+        position_selector = response.xpath("//span[contains(@class,'position')]/text()")
+        if position_selector:
+            position = position_selector[0].extract()
+        else:
+            position = None
+        description_selector = response.xpath("//span[contains(@class,'description')]//span//text()")
+        if description_selector:
+            description = description_selector[0].extract().strip()
+        else:
+            description = None
+        agree_count_selector = response.xpath("//span[@class='zm-profile-header-user-agree']//strong/text()")
+        if agree_count_selector:
+            agree_count = agree_count_selector[0].extract()
+        else:
+            agree_count = None
+        thanks_count_selector = response.xpath("//span[@class='zm-profile-header-user-thanks']//strong/text()")
+        if thanks_count_selector:
+            thanks_count = thanks_count_selector[0].extract()
+        else:
+            thanks_count = None
+        print name
+        item = ZhiHuUserProfile(user_data_id=user_data_id, name=name, bio=bio, location=location, business=business, business_topic_url=business_topic_url,
                                 gender=gender, employment=employment, position=position, description=description,
                                 agree_count=agree_count, thanks_count=thanks_count)
         return item

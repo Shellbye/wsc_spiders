@@ -27,3 +27,5 @@ MONGODB_COLLECTION = 'zhihu'
 
 LOG_FILE = 'zhihu.log'
 LOG_LEVEL = 'INFO'
+
+COOKIES_ENABLES = True
