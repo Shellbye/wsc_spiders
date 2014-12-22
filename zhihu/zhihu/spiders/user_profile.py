@@ -30,12 +30,33 @@ class UserProfileSpider(scrapy.Spider):
             yield Request('http://www.zhihu.com/people/roc-lee-md/followers', callback=self.parse_follower)
 
     def parse_follower(self, response):
-        # _xsrf的值在cookie中
         followers = response.xpath("//div[@class='zm-profile-card zm-profile-section-item zg-clear no-hovercard']")
         for f in followers:
             id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
             print id
         return
+
+    @staticmethod
+    def get_more_followers():
+        """
+        data-access-method:
+            url:
+                http://www.zhihu.com/node/ProfileFollowersListV2
+            input:
+                method:next
+                params:{"offset":80,"order_by":"created","hash_id":"114b18c0ed112db921e3c40fb689248f"}
+                _xsrf:f1460d2580fbf34ccd508eb4489f1097
+            output:
+                {"r":0,"msg":[div_data...]}
+            notice:
+                _xsrf的值在cookie中
+                没有更多关注者msg为空
+        input:
+            _xsrf
+        output:
+            ids
+        """
+        pass
 
     def parse_profile(self, response):
         id = response.xpath("//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id")[0].extract()
