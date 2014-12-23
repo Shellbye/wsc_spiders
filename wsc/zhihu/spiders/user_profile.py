@@ -55,7 +55,11 @@ class UserProfileSpider(scrapy.Spider):
         return item
 
     def parse_question_tags(self, response):
-        pass
+        tags = response.xpath("//div[@class='zm-tag-editor-labels zg-clear']/a/text()")
+        ret = []
+        for tag in tags:
+            ret.append(tag.extract())
+        return ret
 
     def parse_answers(self, response):
         pass
@@ -170,6 +174,7 @@ class UserProfileSpider(scrapy.Spider):
                       meta={
                           'item': item,
                       })
+        print "after yield.............."
 
     @staticmethod
     def get_more_followers():
