@@ -49,6 +49,7 @@ class UserProfileSpider(scrapy.Spider):
     user_profile_fields = {
         'user_data_id': "//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id",
         'name': "//div[@class='title-section ellipsis']/span[@class='name']/text()",
+        'url_name': "//a[@class='zm-profile-header-user-detail zg-link-litblue-normal']/@href",
         'bio': "//span[@class='bio']/text()",
         'location': "//span[contains(@class,'location')]/text()",
         'business': "//span[contains(@class,'business')]/a/text()",
