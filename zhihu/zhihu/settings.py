@@ -8,10 +8,7 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
 ITEM_PIPELINES = {
-    'scrapy_mongodb.MongoDBPipeline': 300,
-    # 'lagou.scrapy_mysql_v0.MySQLPipeline': 5,
-    # 'lagou.scrapy_mongodb_simplified.MongoDBPipelineSimplified': 55,
-    # 'scrapy.contrib.pipeline.images.ImagesPipeline': 1,
+    'zhihu.pipelines.MongoDBPipeline': 300,
 }
 
 BOT_NAME = 'zhihu'
