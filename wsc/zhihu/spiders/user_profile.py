@@ -48,9 +48,14 @@ class UserProfileSpider(scrapy.Spider):
             question_item = {}
             for attr in self.user_question_fields.keys():
                 question_item[attr] = UserProfileSpider.get_detail(question, attr, 'user_question_fields')
+            # todo tags
+            # r = Request('http://www.zhihu.com/' + question_item['question_id'], callback=self.parse_question_tags)
             questions_list.append(question_item)
         item['questions'] = questions_list
         return item
+
+    def parse_question_tags(self, response):
+        pass
 
     def parse_answers(self, response):
         pass
