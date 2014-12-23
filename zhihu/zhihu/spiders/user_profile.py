@@ -7,6 +7,7 @@ from ..items import ZhiHuUserProfile
 class UserProfileSpider(scrapy.Spider):
     name = "user_profile"
     collection = "user_profile"
+    unique_key = 'user_data_id'
     allowed_domains = ["zhihu.com"]
     start_urls = (
         'http://www.zhihu.com/login',

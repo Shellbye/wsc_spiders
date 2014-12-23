@@ -196,6 +196,8 @@ class MongoDBPipeline(object):
         # Hack Here I change the collection to the name of the spider
         if hasattr(spider, 'collection'):
             self.collection = self.database[spider.collection]
+        if hasattr(spider, 'unique_key'):
+            self.config['unique_key'] = spider.unique_key
         if self.config['buffer']:
             self.current_item += 1
             item = dict(item)
