@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import scrapy
 from scrapy.http import Request
-from ..items import ZhiHuUserProfile
+from ..items import *
 
 
 class UserProfileSpider(scrapy.Spider):
@@ -24,8 +23,8 @@ class UserProfileSpider(scrapy.Spider):
         if 'errcode' in response.body:
             return
         else:
-            yield Request('http://www.zhihu.com/people/roc-lee-md/followers',
-                          callback=self.parse_follower)
+            yield Request('http://www.zhihu.com/people/roc-lee-md',
+                          callback=self.parse_profile)
 
     def parse_follower(self, response):
         followers = response.xpath("//div[@class='zm-profile-card "
@@ -41,9 +40,27 @@ class UserProfileSpider(scrapy.Spider):
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
             yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
 
+    def parse_ask(self, response):
+        item = response.meta['item']
+        questions = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
+        questions_list = []
+        for question in questions:
+            question_item = {}
+            for attr in self.user_question_fields.keys():
+                question_item[attr] = UserProfileSpider.get_detail(question, attr, 'user_question_fields')
+            questions_list.append(question_item)
+        item['questions'] = questions_list
+        return item
+
+    def parse_answers(self, response):
+        pass
+
     @staticmethod
-    def get_profile_detail(selector, attr, order=0, default=None):
-        fields = UserProfileSpider.user_profile_fields[attr]
+    def get_detail(selector, attr, source, order=0, default=None):
+        if source == 'user_profile_fields':
+            fields = UserProfileSpider.user_profile_fields[attr]
+        else:
+            fields = UserProfileSpider.user_question_fields[attr]
         method = fields['method']
         if method == 'xpath':
             path = fields['params']
@@ -57,11 +74,33 @@ class UserProfileSpider(scrapy.Spider):
         else:
             return None
 
+    user_question_fields = {
+        'question_id': {
+            'method': 'xpath',
+            'params': "descendant::a[@class='question_link']/@href",
+        },
+        'question_title': {
+            'method': 'xpath',
+            'params': "descendant::a[@class='question_link']/text()",
+        },
+        'question_answer_count': {
+            'method': 'xpath',
+            'params': "descendant::div[@class='meta zg-gray']/span[1]/following-sibling::text()",
+        },
+        'question_follower_count': {
+            'method': 'xpath',
+            'params': "descendant::div[@class='meta zg-gray']/span[2]/following-sibling::text()",
+        },
+        'question_view_count': {
+            'method': 'xpath',
+            'params': "descendant::div[@class='zm-profile-vote-num']/text()",
+        },
+    }
+
     user_profile_fields = {
         'user_data_id': {
             'method': 'xpath',
             'params': "//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id",
-            # 'process': UserProfileSpider.extract_data()
         },
         'name': {
             'method': 'xpath',
@@ -118,15 +157,14 @@ class UserProfileSpider(scrapy.Spider):
     }
 
     def parse_profile(self, response):
-        # icon icon-profile-female
-        # icon icon-profile-male
         item = ZhiHuUserProfile()
-        if len(ZhiHuUserProfile.fields.keys()) != len(self.user_profile_fields.keys()):
-            raise ValueError("%s fields keys doesn't math %s keys count"
-                             % ('ZhiHuUserProfile', 'self.user_profile_fields'))
-        for attr in ZhiHuUserProfile.fields.keys():
-            item[attr] = UserProfileSpider.get_profile_detail(response, attr)
-        return item
+        for attr in self.user_profile_fields.keys():
+            item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
+        yield Request("http://www.zhihu.com/people/roc-lee-md/asks",
+                      callback=self.parse_ask,
+                      meta={
+                          'item': item,
+                      })
 
     @staticmethod
     def get_more_followers():
