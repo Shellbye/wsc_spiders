@@ -66,6 +66,9 @@ class UserProfileSpider(scrapy.Spider):
         # icon icon-profile-female
         # icon icon-profile-male
         item = ZhiHuUserProfile()
+        if len(ZhiHuUserProfile.fields.keys()) != len(self.user_profile_fields.keys()):
+            raise ValueError("%s fields keys doesn't math %s keys count"
+                             % ('ZhiHuUserProfile', 'self.user_profile_fields'))
         for attr in ZhiHuUserProfile.fields.keys():
             item[attr] = UserProfileSpider.get_profile_detail(response, self.user_profile_fields[attr])
         return item
