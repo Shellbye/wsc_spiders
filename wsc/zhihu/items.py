@@ -30,3 +30,4 @@ class ZhiHuUserProfile(scrapy.Item):
     thanks_count = scrapy.Field()
     weibo_url = scrapy.Field()
     questions = scrapy.Field()
+    answers = scrapy.Field()
