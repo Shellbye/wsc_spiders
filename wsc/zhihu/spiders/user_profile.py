@@ -43,23 +43,24 @@ class UserProfileSpider(scrapy.Spider):
     def parse_ask(self, response):
         item = response.meta['item']
         questions = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
-        questions_list = []
         for question in questions:
             question_item = {}
             for attr in self.user_question_fields.keys():
                 question_item[attr] = UserProfileSpider.get_detail(question, attr, 'user_question_fields')
-            # todo tags
-            # r = Request('http://www.zhihu.com/' + question_item['question_id'], callback=self.parse_question_tags)
-            questions_list.append(question_item)
-        item['questions'] = questions_list
-        return item
+            yield Request('http://www.zhihu.com' + question_item['question_id'],
+                          callback=self.parse_question,
+                          meta={'item': item, 'question_item': question_item})
 
-    def parse_question_tags(self, response):
+    def parse_question(self, response):
+        item = response.meta['item']
+        question_item = response.meta['question_item']
         tags = response.xpath("//div[@class='zm-tag-editor-labels zg-clear']/a/text()")
         ret = []
         for tag in tags:
             ret.append(tag.extract())
-        return ret
+        question_item['tags'] = ret
+        item['questions'].append(question_item)
+        return item
 
     def parse_answers(self, response):
         pass
@@ -82,6 +83,43 @@ class UserProfileSpider(scrapy.Spider):
             return getattr(selector, fields['params'])
         else:
             return None
+
+    def parse_profile(self, response):
+        item = ZhiHuUserProfile()
+        item['questions'] = []
+        for attr in self.user_profile_fields.keys():
+            item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
+        yield Request("http://www.zhihu.com/people/roc-lee-md/asks",
+                      callback=self.parse_ask,
+                      meta={
+                          'item': item,
+                      })
+
+    @staticmethod
+    def get_more_followers():
+        """
+        data-access-method:
+            url:
+                http://www.zhihu.com/node/ProfileFollowersListV2
+            input:
+                method:next
+                params:{"offset":80,"order_by":"created","hash_id":"114b18c0ed112db921e3c40fb689248f"}
+                _xsrf:f1460d2580fbf34ccd508eb4489f1097
+            output:
+                {"r":0,"msg":[div_data...]}
+            notice:
+                _xsrf的值在cookie中
+                没有更多关注者msg为空
+        input:
+            _xsrf
+        output:
+            ids
+        """
+        pass
+
+    @staticmethod
+    def extract_data(data):
+        return data[0].extract()
 
     user_question_fields = {
         'question_id': {
@@ -164,40 +202,3 @@ class UserProfileSpider(scrapy.Spider):
             'params': "//div[@class='weibo-wrap']/a/@href",
         },
     }
-
-    def parse_profile(self, response):
-        item = ZhiHuUserProfile()
-        for attr in self.user_profile_fields.keys():
-            item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
-        yield Request("http://www.zhihu.com/people/roc-lee-md/asks",
-                      callback=self.parse_ask,
-                      meta={
-                          'item': item,
-                      })
-        print "after yield.............."
-
-    @staticmethod
-    def get_more_followers():
-        """
-        data-access-method:
-            url:
-                http://www.zhihu.com/node/ProfileFollowersListV2
-            input:
-                method:next
-                params:{"offset":80,"order_by":"created","hash_id":"114b18c0ed112db921e3c40fb689248f"}
-                _xsrf:f1460d2580fbf34ccd508eb4489f1097
-            output:
-                {"r":0,"msg":[div_data...]}
-            notice:
-                _xsrf的值在cookie中
-                没有更多关注者msg为空
-        input:
-            _xsrf
-        output:
-            ids
-        """
-        pass
-
-    @staticmethod
-    def extract_data(data):
-        return data[0].extract()
