@@ -7,13 +7,14 @@
 #
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
+# from ..helper.scrapy_mongodb import MongoDBPipeline
 ITEM_PIPELINES = {
-    'zhihu.pipelines.MongoDBPipeline': 300,
+    'helper.scrapy_mongodb.MongoDBPipeline': 300,
 }
 
 BOT_NAME = 'zhihu'
 
-SPIDER_MODULES = ['zhihu.spiders']
+SPIDER_MODULES = ['zhihu.spiders', 'lagou.spiders']
 NEWSPIDER_MODULE = 'zhihu.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
