@@ -192,6 +192,9 @@ class MongoDBPipeline(object):
         :param spider: The spider running the queries
         :returns: Item object
         """
+        # Hack Here I change the collection to the name of the spider
+        if hasattr(spider, 'collection'):
+            self.collection = spider.collection
         if self.config['buffer']:
             self.current_item += 1
             item = dict(item)
