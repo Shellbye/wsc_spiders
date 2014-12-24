@@ -12,6 +12,10 @@ class UserProfileSpider(scrapy.Spider):
         'http://www.zhihu.com/login',
     )
 
+    def __init__(self, user_data_id='c508dc9af3cc2523fc39702f185d190b'):
+        super(UserProfileSpider, self).__init__()
+        self.user_data_id = user_data_id
+
     def parse(self, response):
         return scrapy.FormRequest.from_response(
             response,
@@ -23,7 +27,7 @@ class UserProfileSpider(scrapy.Spider):
         if 'errcode' in response.body:
             return
         else:
-            yield Request('http://www.zhihu.com/people/shellbye',
+            yield Request('http://www.zhihu.com/people/' + self.user_data_id,
                           callback=self.parse_profile)
 
     def parse_profile(self, response):
@@ -296,5 +300,17 @@ class UserProfileSpider(scrapy.Spider):
         'logs_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[6]/span/text()",
+        },
+        'personal_page_view_count': {
+            'method': 'xpath',
+            'params': "//div[@class='zm-profile-side-section']/div[@class='zm-side-section-inner']/span/strong/text()",
+        },
+        'follow_columns_count': {
+            'method': 'xpath',
+            'params': "//a[contains(@href,'/columns/followed')]/strong/text()",
+        },
+        'follow_topics_count': {
+            'method': 'xpath',
+            'params': "//a[contains(@href,'/topics')]/strong/text()",
         },
     }
