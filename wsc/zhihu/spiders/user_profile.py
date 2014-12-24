@@ -23,25 +23,58 @@ class UserProfileSpider(scrapy.Spider):
         if 'errcode' in response.body:
             return
         else:
-            yield Request('http://www.zhihu.com/people/roc-lee-md',
+            yield Request('http://www.zhihu.com/people/shellbye',
                           callback=self.parse_profile)
 
     def parse_profile(self, response):
         item = ZhiHuUserProfile()
         item['questions'] = []
         item['answers'] = []
+        item['locations'] = []
+        item['employments'] = []
+        item['educations'] = []
         for attr in self.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
-        yield Request("http://www.zhihu.com/people/roc-lee-md/asks",
+        yield Request("http://www.zhihu.com/people/shellbye/about",
+                      callback=self.parse_profile_list,
+                      meta={
+                          'item': item,
+                      })
+        yield Request("http://www.zhihu.com/people/shellbye/asks",
                       callback=self.parse_questions,
                       meta={
                           'item': item,
                       })
-        yield Request("http://www.zhihu.com/people/roc-lee-md/answers",
+        yield Request("http://www.zhihu.com/people/shellbye/answers",
                       callback=self.parse_answers,
                       meta={
                           'item': item,
                       })
+
+    def parse_profile_list(self, response):
+        profile_lists = response.xpath("//div[@class='zm-profile-module zg-clear']")
+        user_item = response.meta['item']
+        for profile_list in profile_lists:
+            title = profile_list.xpath("descendant::h3/span/text()")[0].extract()
+            if title == u"居住信息":
+                locations = []
+                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
+                for item in items:
+                    locations.append(item.extract())
+                user_item['locations'] = locations
+            elif title == u"职业经历":
+                employments = []
+                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
+                for item in items:
+                    employments.append(item.extract())
+                user_item['employments'] = employments
+            elif title == u"教育经历":
+                educations = []
+                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
+                for item in items:
+                    educations.append(item.extract())
+                user_item['educations'] = educations
+        return user_item
 
     def parse_follower(self, response):
         followers = response.xpath("//div[@class='zm-profile-card "
@@ -199,10 +232,10 @@ class UserProfileSpider(scrapy.Spider):
             'method': 'xpath',
             'params': "//span[@class='bio']/text()",
         },
-        'location': {
-            'method': 'xpath',
-            'params': "//span[contains(@class,'location')]/text()",
-        },
+        # 'location': {
+        #     'method': 'xpath',
+        #     'params': "//span[contains(@class,'location')]/text()",
+        # },
         'business': {
             'method': 'xpath',
             'params': "//span[contains(@class,'business')]/a/text()",
@@ -215,14 +248,14 @@ class UserProfileSpider(scrapy.Spider):
             'method': 'xpath',
             'params': "//span[contains(@class,'gender')]/i/@class",
         },
-        'employment': {
-            'method': 'xpath',
-            'params': "//span[contains(@class,'employment')]/text()",
-        },
-        'position': {
-            'method': 'xpath',
-            'params': "//span[contains(@class,'position')]/text()",
-        },
+        # 'employment': {
+        #     'method': 'xpath',
+        #     'params': "//span[contains(@class,'employment')]/text()",
+        # },
+        # 'position': {
+        #     'method': 'xpath',
+        #     'params': "//span[contains(@class,'position')]/text()",
+        # },
         'description': {
             'method': 'xpath',
             'params': "//span[contains(@class,'description')]//span//text()",
