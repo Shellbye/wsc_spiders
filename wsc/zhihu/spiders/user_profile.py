@@ -12,7 +12,7 @@ class UserProfileSpider(scrapy.Spider):
         'http://www.zhihu.com/login',
     )
 
-    def __init__(self, user_data_id='c508dc9af3cc2523fc39702f185d190b'):
+    def __init__(self, user_data_id='114b18c0ed112db921e3c40fb689248f'):
         super(UserProfileSpider, self).__init__()
         self.user_data_id = user_data_id
 
