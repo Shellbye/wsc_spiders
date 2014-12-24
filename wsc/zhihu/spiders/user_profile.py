@@ -37,7 +37,7 @@ class UserProfileSpider(scrapy.Spider):
         item['locations'] = []
         item['employments'] = []
         item['educations'] = []
-        user_url_name = 'shellbye'
+        user_url_name = response.url[28:]
         for attr in self.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
