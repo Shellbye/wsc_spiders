@@ -194,6 +194,10 @@ class UserProfileSpider(scrapy.Spider):
             'method': 'xpath',
             'params': "descendant::a[@class='zm-item-vote-count']/text()",
         },
+        'answer_time': {
+            'method': 'xpath',
+            'params': "descendant::a[@class='answer-date-link meta-item']/text()",
+        },
     }
     user_question_fields = {
         'question_id': {
