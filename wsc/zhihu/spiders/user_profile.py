@@ -37,19 +37,20 @@ class UserProfileSpider(scrapy.Spider):
         item['locations'] = []
         item['employments'] = []
         item['educations'] = []
+        user_url_name = 'shellbye'
         for attr in self.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
-        yield Request("http://www.zhihu.com/people/shellbye/about",
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
                       callback=self.parse_profile_list,
                       meta={
                           'item': item,
                       })
-        yield Request("http://www.zhihu.com/people/shellbye/asks",
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks",
                       callback=self.parse_questions,
                       meta={
                           'item': item,
                       })
-        yield Request("http://www.zhihu.com/people/shellbye/answers",
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers",
                       callback=self.parse_answers,
                       meta={
                           'item': item,
@@ -273,13 +274,21 @@ class UserProfileSpider(scrapy.Spider):
             'method': 'xpath',
             'params': "//div[@class='weibo-wrap']/a/@href",
         },
+        # hack notice the following 'followees' or 'followers' "string-length('followees')"
+        # hack did not has anything to do rather than calculate the length, which is 9
         'followee_count': {
             'method': 'xpath',
-            'params': "//a[@href='/people/shellbye/followees']/strong/text()",
+            'params': "//div[@class='zm-profile-side-following zg-clear']/"
+                      "a[starts-with(@href, '/people/') and "
+                      "substring(@href, string-length(@href) - string-length('followees') +1)][1]"
+                      "/strong/text()",
         },
         'follower_count': {
             'method': 'xpath',
-            'params': "//a[@href='/people/shellbye/followers']/strong/text()"
+            'params': "//div[@class='zm-profile-side-following zg-clear']/"
+                      "a[starts-with(@href, '/people/') and "
+                      "substring(@href, string-length(@href) - string-length('followers') +1)][2]"
+                      "/strong/text()",
         },
         'questions_count': {
             'method': 'xpath',
