@@ -97,7 +97,8 @@ class UserProfileSpider(scrapy.Spider):
                           callback=self.parse_question_tags,
                           meta={'item': response.meta['item'], 'question_item': question_item})
 
-    def parse_question_tags(self, response):
+    @staticmethod
+    def parse_question_tags(response):
         item = response.meta['item']
         question_item = response.meta['question_item']
         tags = response.xpath("//div[@class='zm-tag-editor-labels zg-clear']/a/text()")
@@ -118,7 +119,8 @@ class UserProfileSpider(scrapy.Spider):
                           meta={'item': response.meta['item'], 'answer_item': answer_item},
                           callback=self.parse_answer_content)
 
-    def parse_answer_content(self, response):
+    @staticmethod
+    def parse_answer_content(response):
         item = response.meta['item']
         answer_item = response.meta['answer_item']
         content = response.xpath("//div[@class=' zm-editable-content clearfix']")[0].extract()
@@ -148,7 +150,8 @@ class UserProfileSpider(scrapy.Spider):
             return None
 
     @staticmethod
-    def get_more_followers():
+    def get_more_data():
+        # todo
         """
         data-access-method:
             url:
