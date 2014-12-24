@@ -56,12 +56,16 @@ class UserProfileSpider(scrapy.Spider):
         user_item = response.meta['item']
         for profile_list in profile_lists:
             for key in self.user_profile_list_fields.keys():
-                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
+                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li")
                 title = profile_list.xpath("descendant::h3/i/@class")[0].extract()
                 if key != title:
                     continue
                 for item in items:
-                    user_item[self.user_profile_list_fields[key]].append(item.extract())
+                    text = item.xpath("@data-title")[0].extract()
+                    sub = item.xpath("@data-sub-title")[0].extract()
+                    if sub:
+                        text += " - " + sub
+                    user_item[self.user_profile_list_fields[key]].append(text)
         return user_item
 
     def parse_follower(self, response):
