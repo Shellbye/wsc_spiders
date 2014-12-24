@@ -269,4 +269,32 @@ class UserProfileSpider(scrapy.Spider):
             'method': 'xpath',
             'params': "//div[@class='weibo-wrap']/a/@href",
         },
+        'followee_count': {
+            'method': 'xpath',
+            'params': "//a[@href='/people/shellbye/followees']/strong/text()",
+        },
+        'follower_count': {
+            'method': 'xpath',
+            'params': "//a[@href='/people/shellbye/followers']/strong/text()"
+        },
+        'questions_count': {
+            'method': 'xpath',
+            'params': "//div[@class='profile-navbar clearfix']/a[2]/span/text()",
+        },
+        'answers_count': {
+            'method': 'xpath',
+            'params': "//div[@class='profile-navbar clearfix']/a[3]/span/text()",
+        },
+        'posts_count': {
+            'method': 'xpath',
+            'params': "//div[@class='profile-navbar clearfix']/a[4]/span/text()",
+        },
+        'collections_count': {
+            'method': 'xpath',
+            'params': "//div[@class='profile-navbar clearfix']/a[5]/span/text()",
+        },
+        'logs_count': {
+            'method': 'xpath',
+            'params': "//div[@class='profile-navbar clearfix']/a[6]/span/text()",
+        },
     }
