@@ -55,25 +55,13 @@ class UserProfileSpider(scrapy.Spider):
         profile_lists = response.xpath("//div[@class='zm-profile-module zg-clear']")
         user_item = response.meta['item']
         for profile_list in profile_lists:
-            title = profile_list.xpath("descendant::h3/span/text()")[0].extract()
-            if title == u"居住信息":
-                locations = []
+            for key in self.user_profile_list_fields.keys():
                 items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
+                title = profile_list.xpath("descendant::h3/i/@class")[0].extract()
+                if key != title:
+                    continue
                 for item in items:
-                    locations.append(item.extract())
-                user_item['locations'] = locations
-            elif title == u"职业经历":
-                employments = []
-                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
-                for item in items:
-                    employments.append(item.extract())
-                user_item['employments'] = employments
-            elif title == u"教育经历":
-                educations = []
-                items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li/@data-title")
-                for item in items:
-                    educations.append(item.extract())
-                user_item['educations'] = educations
+                    user_item[self.user_profile_list_fields[key]].append(item.extract())
         return user_item
 
     def parse_follower(self, response):
@@ -175,6 +163,11 @@ class UserProfileSpider(scrapy.Spider):
     @staticmethod
     def extract_data(data):
         return data[0].extract()
+    user_profile_list_fields = {
+        'zm-profile-icon zm-profile-icon-location': 'locations',
+        'zm-profile-icon zm-profile-icon-company': 'employments',
+        'zm-profile-icon zm-profile-icon-edu': 'educations',
+    }
     user_answer_fields = {
         'answer_id': {
             'method': 'xpath',
