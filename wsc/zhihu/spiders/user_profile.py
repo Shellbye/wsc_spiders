@@ -274,21 +274,13 @@ class UserProfileSpider(scrapy.Spider):
             'method': 'xpath',
             'params': "//div[@class='weibo-wrap']/a/@href",
         },
-        # hack notice the following 'followees' or 'followers' "string-length('followees')"
-        # hack did not has anything to do rather than calculate the length, which is 9
         'followee_count': {
             'method': 'xpath',
-            'params': "//div[@class='zm-profile-side-following zg-clear']/"
-                      "a[starts-with(@href, '/people/') and "
-                      "substring(@href, string-length(@href) - string-length('followees') +1)][1]"
-                      "/strong/text()",
+            'params': "//div[@class='zm-profile-side-following zg-clear']/a[1]/strong/text()",
         },
         'follower_count': {
             'method': 'xpath',
-            'params': "//div[@class='zm-profile-side-following zg-clear']/"
-                      "a[starts-with(@href, '/people/') and "
-                      "substring(@href, string-length(@href) - string-length('followers') +1)][2]"
-                      "/strong/text()",
+            'params': "//div[@class='zm-profile-side-following zg-clear']/a[2]/strong/text()",
         },
         'questions_count': {
             'method': 'xpath',
