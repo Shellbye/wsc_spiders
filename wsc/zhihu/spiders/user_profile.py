@@ -148,14 +148,7 @@ class UserProfileSpider(scrapy.Spider):
 
     @staticmethod
     def get_detail(selector, attr, source, order=0, default=None):
-        if source == 'user_profile_fields':
-            fields = UserProfileSpider.user_profile_fields[attr]
-        elif source == 'user_answer_fields':
-            fields = UserProfileSpider.user_answer_fields[attr]
-        elif source == 'user_reputation_fields':
-            fields = UserProfileSpider.user_reputation_fields[attr]
-        else:
-            fields = UserProfileSpider.user_question_fields[attr]
+        fields = getattr(UserProfileSpider, source)[attr]
         method = fields['method']
         if method == 'xpath':
             path = fields['params']
