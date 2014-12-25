@@ -53,11 +53,11 @@ class JdSpider(scrapy.Spider):
     def parse_2(self, response):
         # 更多页码已没有结果
         if response.css(".noresult"):
-            log.msg(response.meta['category'] + "\t"
-                    + response.meta['sub_category'] + "\t"
-                    + response.meta['keywords'] + "\t no more page \t since "
-                    + response.meta['current_page'],
-                    level=log.ERROR)
+            # log.msg(response.meta['category'] + "\t"
+            #         + response.meta['sub_category'] + "\t"
+            #         + response.meta['keywords'] + "\t no more page \t since "
+            #         + response.meta['current_page'],
+            #         level=log.ERROR)
             return
         for job_selector in response.xpath("//ul[@class='hot_pos reset']"
                                            "//li[contains(@class,'clearfix')]//div[@class='hot_pos_l']//a"):
