@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from scrapy.http import Request
+from scrapy import log
 from ..items import *
 
 
@@ -15,6 +16,7 @@ class UserProfileSpider(scrapy.Spider):
     def __init__(self, user_data_id='114b18c0ed112db921e3c40fb689248f'):
         super(UserProfileSpider, self).__init__()
         self.user_data_id = user_data_id
+        log.msg("start crawl " + user_data_id, level=log.INFO)
 
     def parse(self, response):
         return scrapy.FormRequest.from_response(
@@ -25,12 +27,16 @@ class UserProfileSpider(scrapy.Spider):
 
     def login(self, response):
         if 'errcode' in response.body:
+            log.msg("login error: " + response.body, level=log.ERROR)
             return
         else:
+            log.msg("login successfully", level=log.INFO)
             yield Request('http://www.zhihu.com/people/' + self.user_data_id,
                           callback=self.parse_profile)
 
     def parse_profile(self, response):
+        if response.code == 404:
+            log.msg("user not exist: " + response.url[28:], level=log.ERROR)
         item = ZhiHuUserProfile()
         item['questions'] = []
         item['answers'] = []
@@ -38,6 +44,7 @@ class UserProfileSpider(scrapy.Spider):
         item['employments'] = []
         item['educations'] = []
         user_url_name = response.url[28:]
+        log.msg("user url name: " + user_url_name, level=log.INFO)
         for attr in self.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
