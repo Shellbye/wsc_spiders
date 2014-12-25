@@ -35,7 +35,7 @@ class UserProfileSpider(scrapy.Spider):
                           callback=self.parse_profile)
 
     def parse_profile(self, response):
-        if response.code == 404:
+        if response.status == 404:
             log.msg("user not exist: " + response.url[28:], level=log.ERROR)
         item = ZhiHuUserProfile()
         item['questions'] = []
