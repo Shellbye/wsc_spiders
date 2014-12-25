@@ -8,7 +8,7 @@ from ..items import LagouItem
 
 
 class JdSpider(scrapy.Spider):
-    name = "jd-xpath"
+    name = "jd"
     collection = "lagou_jd"
     unique_key = 'job_name'
     allowed_domains = ["lagou.com"]
@@ -25,17 +25,20 @@ class JdSpider(scrapy.Spider):
         for box in response.xpath("//div[@class='menu_box']"):
             for current_category_path in box.xpath("descendant::div[@class='menu_main']"):
                 current_category_text = current_category_path.xpath("descendant::h2/text()").extract()[0]
-                for current_sub_category_xpath in box.xpath("descendant::div[@class='menu_sub dn']//dl[@class='reset']"):
-                    current_sub_category_text = current_sub_category_xpath.xpath("descendant::dt//a/text()").extract()[0].strip()
+                for current_sub_category_xpath in box.xpath("descendant::div[@class='menu_sub dn']"
+                                                            "//dl[@class='reset']"):
+                    current_sub_category_text = current_sub_category_xpath.xpath("descendant::"
+                                                                                 "dt//a/text()").extract()[0].strip()
                     for current_keyword_xpath in current_sub_category_xpath.xpath("descendant::dd//a"):
                         current_keyword_text = current_keyword_xpath.xpath("descendant::text()").extract()[0]
                         for page in range(1, 30):
                             current_keywords_link = u"http://www.lagou.com/jobs/list_" \
                                                     + current_keyword_text + u"?kd=" \
-                                                    + current_keyword_text + u"&spc=1&pl=&gj=&xl=&yx=&gx=&st=" \
-                                                                         u"&labelWords=label%2Clabel&lc=" \
-                                                                         u"&workAddress=&city=全国&requestId=" \
-                                                                         u"&pn=" \
+                                                    + current_keyword_text + \
+                                                    u"&spc=1&pl=&gj=&xl=&yx=&gx=&st=" \
+                                                    u"&labelWords=label%2Clabel&lc=" \
+                                                    u"&workAddress=&city=全国&requestId=" \
+                                                    u"&pn=" \
                                                     + unicode(page)
                             yield Request(current_keywords_link,
                                           meta={
@@ -56,7 +59,8 @@ class JdSpider(scrapy.Spider):
                     + response.meta['current_page'],
                     level=log.ERROR)
             return
-        for job_selector in response.xpath("//ul[@class='hot_pos reset']//li[contains(@class,'clearfix')]//div[@class='hot_pos_l']//a"):
+        for job_selector in response.xpath("//ul[@class='hot_pos reset']"
+                                           "//li[contains(@class,'clearfix')]//div[@class='hot_pos_l']//a"):
             job_link = job_selector.xpath("@href").extract()[0]
             response.meta.update({
                 'job_link': job_selector.xpath("descendant::text()").extract()[0],
