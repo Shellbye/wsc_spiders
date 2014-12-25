@@ -56,26 +56,27 @@ class UserProfileSpider(scrapy.Spider):
         log.msg("user url name: " + user_url_name, level=log.INFO)
         for attr in self.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
-        return item
-        # yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
-        #               callback=self.parse_profile_list,
-        #               meta={
-        #                   'item': item,
-        #               })
-        # yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks",
-        #               callback=self.parse_questions,
-        #               meta={
-        #                   'item': item,
-        #               })
-        # yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers",
-        #               callback=self.parse_answers,
-        #               meta={
-        #                   'item': item,
-        #               })
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
+                      callback=self.parse_profile_list,
+                      meta={
+                          'item': item,
+                      })
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks",
+                      callback=self.parse_questions,
+                      meta={
+                          'item': item,
+                      })
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers",
+                      callback=self.parse_answers,
+                      meta={
+                          'item': item,
+                      })
 
     def parse_profile_list(self, response):
-        profile_lists = response.xpath("//div[@class='zm-profile-module zg-clear']")
         user_item = response.meta['item']
+        profile_lists = response.xpath("//div[@class='zm-profile-module zg-clear']")
+        for attr in self.user_reputation_fields.keys():
+            user_item[attr] = UserProfileSpider.get_detail(response, attr, 'user_reputation_fields')
         for profile_list in profile_lists:
             for key in self.user_profile_list_fields.keys():
                 items = profile_list.xpath("descendant::ul[@class='zm-profile-details-items']/li")
@@ -151,6 +152,8 @@ class UserProfileSpider(scrapy.Spider):
             fields = UserProfileSpider.user_profile_fields[attr]
         elif source == 'user_answer_fields':
             fields = UserProfileSpider.user_answer_fields[attr]
+        elif source == 'user_reputation_fields':
+            fields = UserProfileSpider.user_reputation_fields[attr]
         else:
             fields = UserProfileSpider.user_question_fields[attr]
         method = fields['method']
@@ -192,6 +195,24 @@ class UserProfileSpider(scrapy.Spider):
     @staticmethod
     def extract_data(data):
         return data[0].extract()
+    user_reputation_fields = {
+        'vote_count': {
+            'method': 'xpath',
+            'params': "//i[@class='zm-profile-icon zm-profile-icon-vote']/following-sibling::span/strong/text()",
+        },
+        'thank_count': {
+            'method': 'xpath',
+            'params': "//i[@class='zm-profile-icon zm-profile-icon-thank']/following-sibling::span/strong/text()",
+        },
+        'fav_count': {
+            'method': 'xpath',
+            'params': "//i[@class='zm-profile-icon zm-profile-icon-fav']/following-sibling::span/strong/text()",
+        },
+        'share_count': {
+            'method': 'xpath',
+            'params': "//i[@class='zm-profile-icon zm-profile-icon-share']/following-sibling::span/strong/text()",
+        },
+    }
     user_profile_list_fields = {
         'zm-profile-icon zm-profile-icon-location': 'locations',
         'zm-profile-icon zm-profile-icon-company': 'employments',
@@ -285,14 +306,6 @@ class UserProfileSpider(scrapy.Spider):
         'description': {
             'method': 'xpath',
             'params': "//span[contains(@class,'description')]//span//text()",
-        },
-        'agree_count': {
-            'method': 'xpath',
-            'params': "//span[@class='zm-profile-header-user-agree']//strong/text()",
-        },
-        'thanks_count': {
-            'method': 'xpath',
-            'params': "//span[@class='zm-profile-header-user-thanks']//strong/text()",
         },
         'weibo_url': {
             'method': 'xpath',
