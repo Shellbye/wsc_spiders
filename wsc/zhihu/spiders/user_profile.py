@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from scrapy.http import Request
 from scrapy import log
+from scrapy import signals
+from scrapy.xlib.pydispatch import dispatcher
 from ..items import *
 
 
@@ -15,8 +17,15 @@ class UserProfileSpider(scrapy.Spider):
 
     def __init__(self, user_data_id='114b18c0ed112db921e3c40fb689248f'):
         super(UserProfileSpider, self).__init__()
+        dispatcher.connect(self.closed, signals.spider_closed)
         self.user_data_id = user_data_id
         log.msg("start crawl " + user_data_id, level=log.INFO)
+
+    def closed(self, spider):
+        # https://groups.google.com/forum/#!topic/scrapy-users/0eNtQFDzXbI
+        if spider is not self:
+            return
+        log.msg("crawl ended", level=log.INFO)
 
     def parse(self, response):
         return scrapy.FormRequest.from_response(
@@ -47,21 +56,22 @@ class UserProfileSpider(scrapy.Spider):
         log.msg("user url name: " + user_url_name, level=log.INFO)
         for attr in self.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
-        yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
-                      callback=self.parse_profile_list,
-                      meta={
-                          'item': item,
-                      })
-        yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks",
-                      callback=self.parse_questions,
-                      meta={
-                          'item': item,
-                      })
-        yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers",
-                      callback=self.parse_answers,
-                      meta={
-                          'item': item,
-                      })
+        return item
+        # yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
+        #               callback=self.parse_profile_list,
+        #               meta={
+        #                   'item': item,
+        #               })
+        # yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks",
+        #               callback=self.parse_questions,
+        #               meta={
+        #                   'item': item,
+        #               })
+        # yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers",
+        #               callback=self.parse_answers,
+        #               meta={
+        #                   'item': item,
+        #               })
 
     def parse_profile_list(self, response):
         profile_lists = response.xpath("//div[@class='zm-profile-module zg-clear']")
