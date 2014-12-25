@@ -149,18 +149,13 @@ class UserProfileSpider(scrapy.Spider):
     @staticmethod
     def get_detail(selector, attr, source, order=0, default=None):
         fields = getattr(UserProfileSpider, source)[attr]
-        method = fields['method']
-        if method == 'xpath':
-            path = fields['params']
-            element = selector.xpath(path)
-            if element:
-                return element[order].extract()
-            else:
-                return default
-        elif method == 'attribute':
-            return getattr(selector, fields['params'])
+        element = getattr(selector, fields['method'])(fields['params'])
+        if not element:
+            return element
+        elif isinstance(element, (str, int, float, unicode)):
+            return element
         else:
-            return None
+            return element[0].extract()
 
     @staticmethod
     def get_more_data():
@@ -265,7 +260,7 @@ class UserProfileSpider(scrapy.Spider):
             'params': "//div[@class='title-section ellipsis']/span[@class='name']/text()",
         },
         'url_name': {
-            'method': 'attribute',
+            'method': '__getattribute__',
             'params': 'url'
         },
         'bio': {
