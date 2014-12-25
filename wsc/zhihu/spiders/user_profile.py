@@ -2,6 +2,7 @@
 from scrapy.http import Request
 from scrapy import log
 from scrapy import signals
+from scrapy.selector import SelectorList
 from scrapy.xlib.pydispatch import dispatcher
 from ..items import *
 
@@ -147,15 +148,15 @@ class UserProfileSpider(scrapy.Spider):
         return item
 
     @staticmethod
-    def get_detail(selector, attr, source, order=0, default=None):
+    def get_detail(selector, attr, source):
         fields = getattr(UserProfileSpider, source)[attr]
         element = getattr(selector, fields['method'])(fields['params'])
-        if not element:
-            return element
-        elif isinstance(element, (str, int, float, unicode)):
-            return element
-        else:
+        if 'process' in fields:
+            element = getattr(UserProfileSpider, fields['process'])(element)
+        if element and isinstance(element, SelectorList):
             return element[0].extract()
+        else:
+            return element
 
     @staticmethod
     def get_more_data():
@@ -181,8 +182,10 @@ class UserProfileSpider(scrapy.Spider):
         pass
 
     @staticmethod
-    def extract_data(data):
-        return data[0].extract()
+    def process_url_name(url_name):
+        if not url_name:
+            return None
+        return url_name[28:]
     user_reputation_fields = {
         'vote_count': {
             'method': 'xpath',
@@ -261,7 +264,8 @@ class UserProfileSpider(scrapy.Spider):
         },
         'url_name': {
             'method': '__getattribute__',
-            'params': 'url'
+            'params': 'url',
+            'process': 'process_url_name',
         },
         'bio': {
             'method': 'xpath',
