@@ -30,3 +30,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
     'wsc.rotate_useragent.RotateUserAgentMiddleware': 400
 }
+
+WEBSERVICE_RESOURCES = {
+    'wsc.services.ItemResource.ItemCountResource': 1,
+}
