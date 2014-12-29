@@ -56,6 +56,8 @@ class UserProfileSpider(scrapy.Spider):
         item['locations'] = []
         item['employments'] = []
         item['educations'] = []
+        item['columns'] = []
+        item['topics'] = []
         user_url_name = response.url[28:]
         log.msg("user url name: " + user_url_name, level=log.INFO)
         for attr in FieldsDownload.user_profile_fields.keys():
@@ -80,6 +82,42 @@ class UserProfileSpider(scrapy.Spider):
                           meta={
                               'item': item,
                           })
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/columns/followed",
+                      callback=self.parse_followed_columns,
+                      meta={
+                          'item': item,
+                      })
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/topics",
+                      callback=self.parse_followed_topics,
+                      meta={
+                          'item': item,
+                      })
+
+    def parse_followed_columns(self, response):
+        user_item = response.meta['item']
+        all_columns = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
+        for column in all_columns:
+            column_item = {
+                'url': column.xpath("descendant::a[@class='zm-list-avatar-link']/@href")[0].extract(),
+                'name': column.xpath("descendant::div[@class='zm-profile-section-main']/a/strong/text()")[0].extract(),
+                'description': column.xpath("descendant::div[@class='description']/text()")[0].extract(),
+                'meta': column.xpath("descendant::div[@class='meta']/text()")[0].extract(),
+            }
+            user_item.append(column_item)
+        return user_item
+
+    def parse_followed_topics(self, response):
+        user_item = response.meta['item']
+        all_topics = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
+        for topic in all_topics:
+            topic_item = {
+                'url': topic.xpath("descendant::a[@class='zm-list-avatar-link']/href")[0].extract(),
+                'name': topic.xpath("descendant::div[@class='zm-profile-section-main']/a[2]/strong/text()")[0].extract(),
+                'content': topic.xpath("descendant::div[@class='zm-editable-content']/text()")[0].extract(),
+                'answers_count': topic.xpath("descendant::a[@class='zg-link-gray']/text()")[0].extract(),
+            }
+            user_item.append(topic_item)
+        return user_item
 
     def parse_profile_list(self, response):
         user_item = response.meta['item']

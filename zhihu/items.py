@@ -42,5 +42,7 @@ class ZhiHuUserProfile(scrapy.Item):
     personal_page_view_count = scrapy.Field()
     follow_columns_count = scrapy.Field()
     follow_topics_count = scrapy.Field()
+    columns = scrapy.Field()
+    topics = scrapy.Field()
     questions = scrapy.Field()
     answers = scrapy.Field()
