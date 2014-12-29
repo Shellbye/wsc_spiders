@@ -74,6 +74,10 @@ class FieldsDownload(object):
             'method': 'xpath',
             'params': "//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id",
         },
+        'user__xsrf_value': {
+            'method': 'xpath',
+            'params': "//input[@name='_xsrf']/@value",
+        },
         'name': {
             'method': 'xpath',
             'params': "//div[@class='title-section ellipsis']/span[@class='name']/text()",

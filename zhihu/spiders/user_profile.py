@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import math
+
 from scrapy.http import Request
 from scrapy import log
 from scrapy import signals
@@ -63,16 +65,21 @@ class UserProfileSpider(scrapy.Spider):
                       meta={
                           'item': item,
                       })
-        yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks",
-                      callback=self.parse_questions,
-                      meta={
-                          'item': item,
-                      })
-        yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers",
-                      callback=self.parse_answers,
-                      meta={
-                          'item': item,
-                      })
+        question_page = math.ceil(float(item['questions_count']) / 20.0)
+        for page in range(1, int(question_page) + 1):
+            yield Request("http://www.zhihu.com/people/" + user_url_name + "/asks?page=" + str(page),
+                          callback=self.parse_questions,
+                          meta={
+                              'item': item,
+                          })
+
+        answer_page = math.ceil(float(item['answers_count']) / 20.0)
+        for page in range(1, int(answer_page) + 1):
+            yield Request("http://www.zhihu.com/people/" + user_url_name + "/answers?page=" + str(page),
+                          callback=self.parse_answers,
+                          meta={
+                              'item': item,
+                          })
 
     def parse_profile_list(self, response):
         user_item = response.meta['item']

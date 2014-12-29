@@ -16,6 +16,7 @@ class ZhihuItem(scrapy.Item):
 
 class ZhiHuUserProfile(scrapy.Item):
     user_data_id = scrapy.Field()
+    user__xsrf_value = scrapy.Field()
     name = scrapy.Field()
     url_name = scrapy.Field()
     bio = scrapy.Field()
