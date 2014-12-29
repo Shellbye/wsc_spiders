@@ -100,10 +100,10 @@ class UserProfileSpider(scrapy.Spider):
             column_item = {
                 'url': column.xpath("descendant::a[@class='zm-list-avatar-link']/@href")[0].extract(),
                 'name': column.xpath("descendant::div[@class='zm-profile-section-main']/a/strong/text()")[0].extract(),
-                'description': column.xpath("descendant::div[@class='description']/text()")[0].extract(),
-                'meta': column.xpath("descendant::div[@class='meta']/text()")[0].extract(),
+                'description': column.xpath("descendant::div[@class='description']")[0].extract(),
+                'meta': column.xpath("descendant::div[@class='meta']")[0].extract(),
             }
-            user_item.append(column_item)
+            user_item['columns'].append(column_item)
         return user_item
 
     def parse_followed_topics(self, response):
@@ -111,12 +111,12 @@ class UserProfileSpider(scrapy.Spider):
         all_topics = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
         for topic in all_topics:
             topic_item = {
-                'url': topic.xpath("descendant::a[@class='zm-list-avatar-link']/href")[0].extract(),
+                'url': topic.xpath("descendant::a[@class='zm-list-avatar-link']/@href")[0].extract(),
                 'name': topic.xpath("descendant::div[@class='zm-profile-section-main']/a[2]/strong/text()")[0].extract(),
-                'content': topic.xpath("descendant::div[@class='zm-editable-content']/text()")[0].extract(),
+                'content': topic.xpath("descendant::div[@class='zm-editable-content']")[0].extract(),
                 'answers_count': topic.xpath("descendant::a[@class='zg-link-gray']/text()")[0].extract(),
             }
-            user_item.append(topic_item)
+            user_item['topics'].append(topic_item)
         return user_item
 
     def parse_profile_list(self, response):
