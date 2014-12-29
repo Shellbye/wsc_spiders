@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
+import urllib
+import urllib2
 
 from scrapy.http import Request
 from scrapy import log
@@ -20,7 +22,7 @@ class UserProfileSpider(scrapy.Spider):
         'http://www.zhihu.com/login',
     )
 
-    def __init__(self, user_data_id='114b18c0ed112db921e3c40fb689248f'):
+    def __init__(self, user_data_id='18c79c6cc76ce8db8518367b46353a54'):
         super(UserProfileSpider, self).__init__()
         dispatcher.connect(self.closed, signals.spider_closed)
         self.user_data_id = user_data_id
@@ -205,7 +207,7 @@ class UserProfileSpider(scrapy.Spider):
             return element
 
     @staticmethod
-    def get_more_data():
+    def get_more_columns(user_data_id, _xsrf, offset=20):
         # todo
         """
         data-access-method:
@@ -218,14 +220,19 @@ class UserProfileSpider(scrapy.Spider):
             output:
                 {"r":0,"msg":[div_data...]}
             notice:
-                _xsrf的值在cookie中
+                _xsrf的值在cookie中和一个hidden的input中都有
+                params中的hash_id就是用户的user_data_id
                 没有更多关注者msg为空
         input:
             _xsrf
         output:
             ids
+        UserProfileSpider.get_more_columns("18c79c6cc76ce8db8518367b46353a54", "d052a24539255e20ec4ef23de30d4e8e")
         """
-        pass
+        params = '{"offset": ' + str(offset) + ', "order_by": "created", "hash_id": ' + user_data_id + '}'
+        post_params = urllib.urlencode({"params": params, "method": "next", "_xsrf": _xsrf})
+        ret = urllib2.urlopen("http://www.zhihu.com/node/ProfileFollowersListV2", post_params)
+        print ret
 
     @staticmethod
     def process_url_name(url_name):
