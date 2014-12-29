@@ -22,7 +22,7 @@ ITEM_PIPELINES = {
 }
 
 LOG_FILE = 'wsc.log'
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
 
 COOKIES_ENABLES = True
 
