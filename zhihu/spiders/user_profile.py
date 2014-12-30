@@ -155,7 +155,7 @@ class UserProfileSpider(scrapy.Spider):
 
     def parse_followee(self, response):
         followees = response.xpath("//div[@class='zm-profile-card "
-                                   "zm-profile-section-item zg-clear no-hovercard]")
+                                   "zm-profile-section-item zg-clear no-hovercard']")
         for f in followees:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
             UserProfileSpider.insert_new_user_data_id(user_data_id)
