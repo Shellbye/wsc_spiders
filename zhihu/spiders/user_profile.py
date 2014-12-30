@@ -198,6 +198,11 @@ class UserProfileSpider(scrapy.Spider):
         answer_item = response.meta['answer_item']
         content = response.xpath("//div[@class=' zm-editable-content clearfix']")[0].extract()
         answer_item['answer_content'] = content
+        tags = response.xpath("//div[@class='zm-tag-editor-labels zg-clear']/a/text()")
+        ret = []
+        for tag in tags:
+            ret.append(tag.extract())
+        answer_item['answer_tags'] = ret
         item['answers'].append(answer_item)
         return item
 
