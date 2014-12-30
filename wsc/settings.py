@@ -22,7 +22,7 @@ ITEM_PIPELINES = {
 }
 
 LOG_FILE = 'wsc.log'
-LOG_LEVEL = 'DEBUG'
+LOG_LEVEL = 'ERROR'
 
 COOKIES_ENABLES = True
 
@@ -34,3 +34,11 @@ DOWNLOADER_MIDDLEWARES = {
 WEBSERVICE_RESOURCES = {
     'wsc.services.ItemResource.ItemCountResource': 1,
 }
+
+EXTENSIONS = {
+    'scrapy.telnet.TelnetConsole': None,
+}
+
+
+IP = "192.168.2.222"
+DB = "scrapy"
