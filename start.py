@@ -1,7 +1,9 @@
 __author__ = 'shellbye'
+import time
+
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
-from scrapy import log, signals
+from scrapy import log
 from zhihu.spiders.user_profile import UserProfileSpider
 from scrapy.utils.project import get_project_settings
 from pymongo import MongoClient
@@ -24,13 +26,20 @@ if __name__ == "__main__":
     while True:
         count += 1
         user = zhihu_user_data_ids.find_one({"crawled": False})
-        # print user
-        zhihu_user_data_ids.update(user, {"$set": {"crawled": True}})
-        # print user
+        crawled_count = user['crawled_count'] + 1
+        zhihu_user_data_ids.update(user,
+                                   {"$set":
+                                        {
+                                            "crawled": True,
+                                            "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S"),
+                                            "crawled_count": crawled_count,
+                                        }
+                                   }
+        )
         if not user:
             break
         setup_spider(user['user_data_id'])
-        if count > 500:
+        if count > 5:
             break
     log.start()
     reactor.run()

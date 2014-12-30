@@ -100,6 +100,9 @@ class UserProfileSpider(scrapy.Spider):
                       callback=self.parse_followee)
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
                       callback=self.parse_follower)
+        zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
+        user = zhihu_user_data_ids.find_one({'user_data_id': self.user_data_id})
+        zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
 
     def parse_followed_columns(self, response):
         user_item = response.meta['item']

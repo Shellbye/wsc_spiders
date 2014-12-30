@@ -12,6 +12,7 @@ with open("zhihuUserRealIDs.txt", 'r') as f:
         else:
             zhihu_user_data_ids.insert({"user_data_id": data_id.strip(),
                                         "crawled": False,
+                                        "crawled_successfully": False,
                                         "crawled_count": 0,
                                         "last_crawled_time": None})
             print "inserted: " + data_id
