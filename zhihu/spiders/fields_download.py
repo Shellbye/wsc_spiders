@@ -44,7 +44,8 @@ class FieldsDownload(object):
         },
         'answer_time': {
             'method': 'xpath',
-            'params': "descendant::a[@class='answer-date-link meta-item']/text()",
+            'params': "descendant::a[@class='answer-date-link meta-item' or "
+                      "@class='answer-date-link last_updated meta-item']/text()",
         },
     }
     user_question_fields = {
