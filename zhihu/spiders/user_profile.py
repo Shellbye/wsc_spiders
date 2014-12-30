@@ -8,9 +8,11 @@ from scrapy import log
 from scrapy import signals
 from scrapy.selector import SelectorList
 from scrapy.xlib.pydispatch import dispatcher
+from pymongo import MongoClient
 
 from zhihu.items import *
 from fields_download import FieldsDownload
+from wsc.settings import IP, DB
 
 
 class UserProfileSpider(scrapy.Spider):
@@ -94,6 +96,10 @@ class UserProfileSpider(scrapy.Spider):
                       meta={
                           'item': item,
                       })
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
+                      callback=self.parse_followee)
+        yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
+                      callback=self.parse_follower)
 
     def parse_followed_columns(self, response):
         user_item = response.meta['item']
@@ -145,14 +151,14 @@ class UserProfileSpider(scrapy.Spider):
                                    "zm-profile-section-item zg-clear no-hovercard']")
         for f in followers:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
+            UserProfileSpider.insert_new_user_data_id(user_data_id)
 
     def parse_followee(self, response):
         followees = response.xpath("//div[@class='zm-profile-card "
                                    "zm-profile-section-item zg-clear no-hovercard]")
         for f in followees:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
+            UserProfileSpider.insert_new_user_data_id(user_data_id)
 
     def parse_questions(self, response):
         questions = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
@@ -205,6 +211,18 @@ class UserProfileSpider(scrapy.Spider):
             return element[0].extract()
         else:
             return element
+
+    @staticmethod
+    def insert_new_user_data_id(user_data_id):
+        zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
+        user = zhihu_user_data_ids.find_one({'user_data_id': user_data_id})
+        if not user:
+            zhihu_user_data_ids.insert({'user_data_id': user_data_id,
+                                        "crawled": False,
+                                        "crawled_count": 0,
+                                        "last_crawled_time": None})
+        else:
+            pass
 
     @staticmethod
     def get_more_columns(user_data_id, _xsrf, offset=20):
