@@ -4,7 +4,7 @@ import time
 
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
-from scrapy import log
+from scrapy import log, signals
 from zhihu.spiders.user_profile import UserProfileSpider
 from scrapy.utils.project import get_project_settings
 from pymongo import MongoClient
@@ -16,6 +16,7 @@ def setup_spider(user_data_id):
     spider = UserProfileSpider(user_data_id=user_data_id)
     settings = get_project_settings()
     crawler = Crawler(settings)
+    crawler.signals.connect(reactor.stop, signal=signals.spider_closed)
     crawler.configure()
     crawler.crawl(spider)
     crawler.start()
@@ -23,7 +24,7 @@ def setup_spider(user_data_id):
 
 if __name__ == "__main__":
     zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
-    count = 1
+    count = 0
     while True:
         count += 1
         user = zhihu_user_data_ids.find_one({"crawled": False})
@@ -40,7 +41,7 @@ if __name__ == "__main__":
         if not user:
             break
         setup_spider(user['user_data_id'])
-        if count > 5:
+        if count >= 500:
             break
     log.start()
     reactor.run()
