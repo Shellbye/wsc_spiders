@@ -16,7 +16,7 @@ def setup_spider(user_data_id):
     spider = UserProfileSpider(user_data_id=user_data_id)
     settings = get_project_settings()
     crawler = Crawler(settings)
-    crawler.signals.connect(reactor.stop, signal=signals.spider_closed)
+    # crawler.signals.connect(reactor.stop, signal=signals.spider_closed)
     crawler.configure()
     crawler.crawl(spider)
     crawler.start()
@@ -27,12 +27,16 @@ if __name__ == "__main__":
     count = 0
     while True:
         count += 1
-        user = zhihu_user_data_ids.find_one({"crawled": False})
+        user = zhihu_user_data_ids.find_one({"fetched": False})
+        if not user:
+            user = zhihu_user_data_ids.find_one({"crawled_successfully": False})
+            if not user:
+                raise TypeError("No data available in Mongo")
         crawled_count = user['crawled_count'] + 1
         zhihu_user_data_ids.update(user,
                                    {"$set":
                                         {
-                                            "crawled": True,
+                                            "fetched": True,
                                             "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S"),
                                             "crawled_count": crawled_count,
                                         }
@@ -41,7 +45,7 @@ if __name__ == "__main__":
         if not user:
             break
         setup_spider(user['user_data_id'])
-        if count >= 500:
+        if count >= 50:
             break
     log.start()
     reactor.run()

@@ -14,7 +14,7 @@ SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
 MONGODB_URI = 'mongodb://192.168.2.222:27017'
-MONGODB_DATABASE = 'scrapy'
+MONGODB_DATABASE = 'scrapy2'
 MONGODB_COLLECTION = 'wsc'
 
 ITEM_PIPELINES = {
@@ -22,7 +22,7 @@ ITEM_PIPELINES = {
 }
 
 LOG_FILE = 'wsc.log'
-LOG_LEVEL = 'ERROR'
+LOG_LEVEL = 'INFO'
 
 COOKIES_ENABLES = True
 
@@ -41,4 +41,4 @@ EXTENSIONS = {
 
 
 IP = "192.168.2.222"
-DB = "scrapy"
+DB = MONGODB_DATABASE

@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from wsc.settings import IP, DB
 
 zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
-with open("zhihuUserRealIDs.txt", 'r') as f:
+with open("ids.txt", 'r') as f:
     count = 0
     for data_id in f:
         user = zhihu_user_data_ids.find_one({"user_data_id": data_id})
@@ -11,7 +11,7 @@ with open("zhihuUserRealIDs.txt", 'r') as f:
             continue
         else:
             zhihu_user_data_ids.insert({"user_data_id": data_id.strip(),
-                                        "crawled": False,
+                                        "fetched": False,
                                         "crawled_successfully": False,
                                         "crawled_count": 0,
                                         "last_crawled_time": None})
