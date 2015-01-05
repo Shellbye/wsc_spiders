@@ -12,7 +12,8 @@ from pymongo import MongoClient
 from wsc.settings import IP, DB
 
 
-class SpiderControl():
+class ReactorControl:
+
     def __init__(self):
         self.crawlers_running = 0
 
@@ -23,50 +24,59 @@ class SpiderControl():
         self.crawlers_running -= 1
         if self.crawlers_running == 0:
             reactor.stop()
-            start()
+            # print "stop reactor..."
+            # time.sleep(10)
+            # sc = SpiderControl()
+            # sc.start()
+
+
+class SpiderControl():
+    def __init__(self):
+        self.zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
+        self.count = 0
+        self.control = ReactorControl()
 
     def setup_spider(self, user_data_id):
         spider = UserProfileSpider(user_data_id=user_data_id)
         settings = get_project_settings()
+        log.start_from_settings(settings)
         crawler = Crawler(settings)
-        crawler.signals.connect(self.remove_crawler, signal=signals.spider_closed)
+        crawler.signals.connect(self.control.remove_crawler, signal=signals.spider_closed)
         crawler.configure()
         crawler.crawl(spider)
-        self.add_crawler()
+        self.control.add_crawler()
         crawler.start()
 
-
-def start():
-    zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
-    count = 0
-    while True:
-        count += 1
-        user = zhihu_user_data_ids.find_one({"fetched": False})
-        if not user:
-            user = zhihu_user_data_ids.find_one({"crawled_successfully": False})
+    def start(self):
+        self.count = 0
+        while True:
+            self.count += 1
+            user = self.zhihu_user_data_ids.find_one({"fetched": False})
             if not user:
-                raise TypeError("No data available in Mongo")
-        crawled_count = user['crawled_count'] + 1
-        zhihu_user_data_ids.update(
-            user,
-            {
-                "$set":
-                    {
-                        "fetched": True,
-                        "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S"),
-                        "crawled_count": crawled_count,
-                    }
-            }
-        )
-        if not user:
-            break
-        sc = SpiderControl()
-        sc.setup_spider(user['user_data_id'])
-        if count >= 500:
-            break
-    log.start()
-    reactor.run()
+                user = self.zhihu_user_data_ids.find_one({"crawled_successfully": False})
+                if not user:
+                    raise TypeError("No data available in Mongo")
+            crawled_count = user['crawled_count'] + 1
+            self.zhihu_user_data_ids.update(
+                user,
+                {
+                    "$set":
+                        {
+                            "fetched": True,
+                            "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S"),
+                            "crawled_count": crawled_count,
+                        }
+                }
+            )
+            if not user:
+                break
+            self.setup_spider(user['user_data_id'])
+            if self.count >= 5:
+                break
+        log.start()
+        reactor.run()
 
 
 if __name__ == "__main__":
-    start()
+    sc = SpiderControl()
+    sc.start()
