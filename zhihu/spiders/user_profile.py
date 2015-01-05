@@ -199,7 +199,11 @@ class UserProfileSpider(scrapy.Spider):
     def parse_answer_content(response):
         item = response.meta['item']
         answer_item = response.meta['answer_item']
-        content = response.xpath("//div[@class=' zm-editable-content clearfix']")[0].extract()
+        content = response.xpath("//div[@class=' zm-editable-content clearfix']")
+        if content:
+            content = content[0].extract()
+        else:
+            content = None
         answer_item['answer_content'] = content
         tags = response.xpath("//div[@class='zm-tag-editor-labels zg-clear']/a/text()")
         ret = []
