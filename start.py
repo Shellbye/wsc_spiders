@@ -12,17 +12,31 @@ from pymongo import MongoClient
 from wsc.settings import IP, DB
 
 
-def setup_spider(user_data_id):
-    spider = UserProfileSpider(user_data_id=user_data_id)
-    settings = get_project_settings()
-    crawler = Crawler(settings)
-    # crawler.signals.connect(reactor.stop, signal=signals.spider_closed)
-    crawler.configure()
-    crawler.crawl(spider)
-    crawler.start()
+class SpiderControl():
+    def __init__(self):
+        self.crawlers_running = 0
+
+    def add_crawler(self):
+        self.crawlers_running += 1
+
+    def remove_crawler(self):
+        self.crawlers_running -= 1
+        if self.crawlers_running == 0:
+            reactor.stop()
+            start()
+
+    def setup_spider(self, user_data_id):
+        spider = UserProfileSpider(user_data_id=user_data_id)
+        settings = get_project_settings()
+        crawler = Crawler(settings)
+        crawler.signals.connect(self.remove_crawler, signal=signals.spider_closed)
+        crawler.configure()
+        crawler.crawl(spider)
+        self.add_crawler()
+        crawler.start()
 
 
-if __name__ == "__main__":
+def start():
     zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
     count = 0
     while True:
@@ -33,19 +47,26 @@ if __name__ == "__main__":
             if not user:
                 raise TypeError("No data available in Mongo")
         crawled_count = user['crawled_count'] + 1
-        zhihu_user_data_ids.update(user,
-                                   {"$set":
-                                        {
-                                            "fetched": True,
-                                            "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S"),
-                                            "crawled_count": crawled_count,
-                                        }
-                                   }
+        zhihu_user_data_ids.update(
+            user,
+            {
+                "$set":
+                    {
+                        "fetched": True,
+                        "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S"),
+                        "crawled_count": crawled_count,
+                    }
+            }
         )
         if not user:
             break
-        setup_spider(user['user_data_id'])
-        if count >= 50:
+        sc = SpiderControl()
+        sc.setup_spider(user['user_data_id'])
+        if count >= 500:
             break
     log.start()
     reactor.run()
+
+
+if __name__ == "__main__":
+    start()
