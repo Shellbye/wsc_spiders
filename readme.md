@@ -7,7 +7,9 @@ usage
 > - use `sudo apt-get install python-pip` to install pip, or read [this][2] for more info
 > - use `sudo pip install -r required.txt` to install required third packages
 > - (optional) run `python insert_ids.py` to import some initial id in **zhihu_user_data_ids**
-> - use `nohup python bgservice.py &` to start the scrapy
+> - use `nohup python start.py &` to start the scrapy
+> - use `ps aux | grep start.py` to check id pid of the previous program(1st column)
+> - use `sudo kill -9 pid` to stop the program
 
 
 development

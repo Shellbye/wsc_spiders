@@ -13,9 +13,13 @@ BOT_NAME = 'wsc'
 SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-MONGODB_URI = 'mongodb://192.168.2.222:27017'
+IP = "localhost"
+
+MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
 MONGODB_COLLECTION = 'wsc'
+
+DB = MONGODB_DATABASE
 
 ITEM_PIPELINES = {
     'wsc.pipelines.MongoDBPipeline': 300,
@@ -38,7 +42,3 @@ WEBSERVICE_RESOURCES = {
 EXTENSIONS = {
     'scrapy.telnet.TelnetConsole': None,
 }
-
-
-IP = "192.168.2.222"
-DB = MONGODB_DATABASE
