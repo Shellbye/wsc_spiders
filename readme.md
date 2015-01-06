@@ -7,7 +7,7 @@ usage
 > - use `sudo apt-get install python-pip` to install pip, or read [this][2] for more info
 > - use `sudo pip install -r required.txt` to install required third packages
 > - (optional) run `python insert_ids.py` to import some initial id in **zhihu_user_data_ids**
-> - use `sudo ./start.py` to start the scrapy
+> - use `nohup python bgservice.py &` to start the scrapy
 
 
 development
