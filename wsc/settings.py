@@ -9,6 +9,7 @@
 #
 
 BOT_NAME = 'wsc'
+DEBUG = False
 
 SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
@@ -42,3 +43,8 @@ WEBSERVICE_RESOURCES = {
 EXTENSIONS = {
     'scrapy.telnet.TelnetConsole': None,
 }
+
+if DEBUG:
+    pass
+else:
+    DOWNLOAD_DELAY = 1

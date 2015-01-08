@@ -18,7 +18,10 @@ from wsc.settings import IP, DB, DEBUG
 
 class UserProfileSpider(scrapy.Spider):
     name = "user_profile"
-    collection = "user_profile_debug"
+    if DEBUG:
+        collection = "user_profile_debug"
+    else:
+        collection = "user_profile"
     zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
     unique_key = 'user_data_id'
     allowed_domains = ["zhihu.com"]
