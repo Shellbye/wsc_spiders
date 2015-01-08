@@ -13,12 +13,12 @@ from pymongo import MongoClient
 
 from zhihu.items import *
 from fields_download import FieldsDownload
-from wsc.settings import IP, DB
+from wsc.settings import IP, DB, DEBUG
 
 
 class UserProfileSpider(scrapy.Spider):
     name = "user_profile"
-    collection = "user_profile"
+    collection = "user_profile_debug"
     zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
     unique_key = 'user_data_id'
     allowed_domains = ["zhihu.com"]
@@ -98,13 +98,26 @@ class UserProfileSpider(scrapy.Spider):
                       meta={
                           'item': item,
                       })
+        if DEBUG:
+            pass
+        else:
+            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
+                          callback=self.parse_followee)
+            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
+                          callback=self.parse_follower)
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
-                      callback=self.parse_followee)
+                      callback=self.collect_followee,
+                      meta={
+                          'item': item,
+                      })
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
-                      callback=self.parse_follower)
-        # zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
+                      callback=self.collect_follower,
+                      meta={
+                          'item': item,
+                      })
         user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': self.user_data_id})
-        UserProfileSpider.zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
+        if user:
+            UserProfileSpider.zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
 
     def parse_followed_columns(self, response):
         user_item = response.meta['item']
@@ -159,14 +172,35 @@ class UserProfileSpider(scrapy.Spider):
             UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
             yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
 
+    def collect_follower(self, response):
+        user_item = response.meta['item']
+        followers = response.xpath("//div[@class='zm-profile-card "
+                                   "zm-profile-section-item zg-clear no-hovercard']")
+        followers_data_ids = []
+        for f in followers:
+            user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
+            followers_data_ids.append(user_data_id)
+        user_item['followers'] = followers_data_ids
+        return user_item
+
     def parse_followee(self, response):
         followees = response.xpath("//div[@class='zm-profile-card "
                                    "zm-profile-section-item zg-clear no-hovercard']")
         for f in followees:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
             UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
-
             yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
+
+    def collect_followee(self, response):
+        user_item = response.meta['item']
+        followees = response.xpath("//div[@class='zm-profile-card "
+                                   "zm-profile-section-item zg-clear no-hovercard']")
+        followees_data_ids = []
+        for f in followees:
+            user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
+            followees_data_ids.append(user_data_id)
+        user_item['followees'] = followees_data_ids
+        return user_item
 
     def parse_questions(self, response):
         questions = response.xpath("//div[@class='zm-profile-section-item zg-clear']")
@@ -231,7 +265,6 @@ class UserProfileSpider(scrapy.Spider):
 
     @staticmethod
     def insert_new_or_update_user_data_id(user_data_id):
-        # zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
         user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': user_data_id})
         if not user:
             UserProfileSpider.zhihu_user_data_ids.insert({'user_data_id': user_data_id,
@@ -255,7 +288,6 @@ class UserProfileSpider(scrapy.Spider):
 
     @staticmethod
     def user_need_to_crawl(user_data_id):
-        # zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
         return UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': user_data_id, "fetched": False})
 
     @staticmethod
@@ -291,3 +323,9 @@ class UserProfileSpider(scrapy.Spider):
         if not url_name:
             return None
         return url_name[28:]
+
+    @staticmethod
+    def process_questions_count(questions_count):
+        if not questions_count:
+            return 0
+        return questions_count

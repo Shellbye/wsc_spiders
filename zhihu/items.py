@@ -46,3 +46,5 @@ class ZhiHuUserProfile(scrapy.Item):
     topics = scrapy.Field()
     questions = scrapy.Field()
     answers = scrapy.Field()
+    followees = scrapy.Field()
+    followers = scrapy.Field()

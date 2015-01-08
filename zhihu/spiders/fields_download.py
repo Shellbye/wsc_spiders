@@ -123,6 +123,7 @@ class FieldsDownload(object):
         'questions_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[2]/span/text()",
+            'process': 'process_questions_count',
         },
         'answers_count': {
             'method': 'xpath',
