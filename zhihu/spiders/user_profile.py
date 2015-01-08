@@ -64,10 +64,29 @@ class UserProfileSpider(scrapy.Spider):
         item['educations'] = []
         item['columns'] = []
         item['topics'] = []
+        item['skilled_topics'] = []
         user_url_name = response.url[28:]
         log.msg("user url name: " + user_url_name, level=log.INFO)
         for attr in FieldsDownload.user_profile_fields.keys():
             item[attr] = UserProfileSpider.get_detail(response, attr, 'user_profile_fields')
+        skilled_topics = response.xpath("//div[@class='zm-profile-section-wrap skilled-topics']"
+                                        "/div[@class='inner zg-clear']"
+                                        "/div[@class='zm-profile-section-list zg-clear']"
+                                        "/div[@class='item']")
+        for st in skilled_topics:
+            t = {
+                'name': st.xpath("descendant::div[@class='content']/div[@class='content-inner']/"
+                                 "h3/text()")[0].extract(),
+                'url': st.xpath("@data-url-token")[0].extract(),
+                'vote': st.xpath("descendant::div[@class='content']/div[@class='content-inner']/"
+                                 "p[@class='meta']/span/i[@class='zg-icon vote']/"
+                                 "following-sibling::text()")[0].extract(),
+                'comment': st.xpath("descendant::div[@class='content']/div[@class='content-inner']/"
+                                    "p[@class='meta']/span/i[@class='zg-icon comment']/"
+                                    "following-sibling::text()")[0].extract()
+            }
+            item['skilled_topics'].append(t)
+
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/about",
                       callback=self.parse_profile_list,
                       meta={

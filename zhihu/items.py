@@ -48,3 +48,4 @@ class ZhiHuUserProfile(scrapy.Item):
     answers = scrapy.Field()
     followees = scrapy.Field()
     followers = scrapy.Field()
+    skilled_topics = scrapy.Field()
