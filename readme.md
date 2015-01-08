@@ -8,6 +8,7 @@ usage
 > - use `sudo pip install -r required.txt` to install required third packages
 > - (optional) run `python insert_ids.py` to import some initial id in **zhihu_user_data_ids**
 > - use `nohup python start.py &` to start the scrapy
+> - use `sudo kill $(ps aux | grep 'python start.py' | awk '{print $2}')` to kill all process
 > - use `ps aux | grep start.py` to check id pid of the previous program(1st column)
 > - use `sudo kill -9 pid` to stop the program
 
