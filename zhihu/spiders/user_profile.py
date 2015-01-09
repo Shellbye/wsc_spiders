@@ -120,13 +120,6 @@ class UserProfileSpider(scrapy.Spider):
                       meta={
                           'item': item,
                       })
-        if DEBUG:
-            pass
-        else:
-            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
-                          callback=self.parse_followee)
-            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
-                          callback=self.parse_follower)
         yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
                       callback=self.collect_followee,
                       meta={
@@ -140,6 +133,13 @@ class UserProfileSpider(scrapy.Spider):
         user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': self.user_data_id})
         if user:
             UserProfileSpider.zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
+        if DEBUG:
+            pass
+        else:
+            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
+                          callback=self.parse_followee)
+            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
+                          callback=self.parse_follower)
 
     def parse_followed_columns(self, response):
         user_item = response.meta['item']
