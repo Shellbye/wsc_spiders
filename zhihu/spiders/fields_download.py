@@ -99,6 +99,7 @@ class FieldsDownload(object):
         'business_topic_url': {
             'method': 'xpath',
             'params': "//span[contains(@class,'business')]/a/@href",
+            'process': "process_selector_extract",
         },
         'gender': {
             'method': 'xpath',
@@ -111,6 +112,7 @@ class FieldsDownload(object):
         'weibo_url': {
             'method': 'xpath',
             'params': "//div[@class='weibo-wrap']/a/@href",
+            'process': "process_selector_extract",
         },
         'followee_count': {
             'method': 'xpath',

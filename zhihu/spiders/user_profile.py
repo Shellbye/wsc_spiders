@@ -7,7 +7,7 @@ import urllib2
 from scrapy.http import Request
 from scrapy import log
 from scrapy import signals
-from scrapy.selector import SelectorList
+from scrapy.selector import SelectorList, Selector
 from scrapy.xlib.pydispatch import dispatcher
 from pymongo import MongoClient
 
@@ -351,3 +351,7 @@ class UserProfileSpider(scrapy.Spider):
         if not questions_count:
             return 0
         return questions_count
+
+    @staticmethod
+    def process_selector_extract(selector):
+        return selector.extract()[0]
