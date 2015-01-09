@@ -78,81 +78,100 @@ class FieldsDownload(object):
         'user__xsrf_value': {
             'method': 'xpath',
             'params': "//input[@name='_xsrf']/@value",
+            'default': "",
         },
         'name': {
             'method': 'xpath',
             'params': "//div[@class='title-section ellipsis']/span[@class='name']/text()",
+            'default': "",
         },
         'url_name': {
             'method': '__getattribute__',
             'params': 'url',
             'process': 'process_url_name',
+            'default': "",
         },
         'bio': {
             'method': 'xpath',
             'params': "//span[@class='bio']/text()",
+            'default': "",
         },
         'business': {
             'method': 'xpath',
             'params': "//span[contains(@class,'business')]/a/text()",
+            'default': "",
         },
         'business_topic_url': {
             'method': 'xpath',
             'params': "//span[contains(@class,'business')]/a/@href",
             'process': "process_selector_extract",
+            'default': "",
         },
         'gender': {
             'method': 'xpath',
             'params': "//span[contains(@class,'gender')]/i/@class",
+            'default': "",
         },
         'description': {
             'method': 'xpath',
             'params': "//span[contains(@class,'description')]//span//text()",
+            'default': "",
         },
         'weibo_url': {
             'method': 'xpath',
             'params': "//div[@class='weibo-wrap']/a/@href",
             'process': "process_selector_extract",
+            'default': "",
         },
         'followee_count': {
             'method': 'xpath',
             'params': "//div[@class='zm-profile-side-following zg-clear']/a[1]/strong/text()",
+            'default': 0,
         },
         'follower_count': {
             'method': 'xpath',
             'params': "//div[@class='zm-profile-side-following zg-clear']/a[2]/strong/text()",
+            'default': 0,
         },
         'questions_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[2]/span/text()",
             'process': 'process_questions_count',
+            'default': 0,
         },
         'answers_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[3]/span/text()",
+            'default': 0,
         },
         'posts_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[4]/span/text()",
+            'default': 0,
         },
         'collections_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[5]/span/text()",
+            'default': 0,
         },
         'logs_count': {
             'method': 'xpath',
             'params': "//div[@class='profile-navbar clearfix']/a[6]/span/text()",
+            'default': 0,
         },
         'personal_page_view_count': {
             'method': 'xpath',
             'params': "//div[@class='zm-profile-side-section']/div[@class='zm-side-section-inner']/span/strong/text()",
+            'default': 0,
         },
         'follow_columns_count': {
             'method': 'xpath',
             'params': "//a[contains(@href,'/columns/followed')]/strong/text()",
+            'default': 0,
         },
         'follow_topics_count': {
             'method': 'xpath',
             'params': "//a[contains(@href,'/topics')]/strong/text()",
+            'default': 0,
         },
     }

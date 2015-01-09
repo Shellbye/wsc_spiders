@@ -278,6 +278,8 @@ class UserProfileSpider(scrapy.Spider):
     def get_detail(selector, attr, source):
         fields = getattr(FieldsDownload, source)[attr]
         element = getattr(selector, fields['method'])(fields['params'])
+        if not element:
+            return fields['default']
         if 'process' in fields:
             element = getattr(UserProfileSpider, fields['process'])(element)
         if element and isinstance(element, SelectorList):
