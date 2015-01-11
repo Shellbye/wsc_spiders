@@ -133,13 +133,6 @@ class UserProfileSpider(scrapy.Spider):
         user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': self.user_data_id})
         if user:
             UserProfileSpider.zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
-        if DEBUG:
-            pass
-        else:
-            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followees",
-                          callback=self.parse_followee)
-            yield Request("http://www.zhihu.com/people/" + user_url_name + "/followers",
-                          callback=self.parse_follower)
 
     def parse_followed_columns(self, response):
         user_item = response.meta['item']
@@ -186,14 +179,6 @@ class UserProfileSpider(scrapy.Spider):
                     user_item[FieldsDownload.user_profile_list_fields[key]].append(text)
         return user_item
 
-    def parse_follower(self, response):
-        followers = response.xpath("//div[@class='zm-profile-card "
-                                   "zm-profile-section-item zg-clear no-hovercard']")
-        for f in followers:
-            user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
-            yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
-
     def collect_follower(self, response):
         user_item = response.meta['item']
         followers = response.xpath("//div[@class='zm-profile-card "
@@ -201,17 +186,10 @@ class UserProfileSpider(scrapy.Spider):
         followers_data_ids = []
         for f in followers:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
+            UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
             followers_data_ids.append(user_data_id)
         user_item['followers'] = followers_data_ids
         return user_item
-
-    def parse_followee(self, response):
-        followees = response.xpath("//div[@class='zm-profile-card "
-                                   "zm-profile-section-item zg-clear no-hovercard']")
-        for f in followees:
-            user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
-            yield Request('http://www.zhihu.com/people/' + user_data_id, callback=self.parse_profile)
 
     def collect_followee(self, response):
         user_item = response.meta['item']
@@ -220,6 +198,7 @@ class UserProfileSpider(scrapy.Spider):
         followees_data_ids = []
         for f in followees:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
+            UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
             followees_data_ids.append(user_data_id)
         user_item['followees'] = followees_data_ids
         return user_item
