@@ -74,6 +74,7 @@ class FieldsDownload(object):
         'user_data_id': {
             'method': 'xpath',
             'params': "//div[@class='zm-profile-header-op-btns clearfix']/button/@data-id",
+            'default': "1166f0aae6dfccf3d89ad6e065804593",  # the crawl user's id
         },
         'user__xsrf_value': {
             'method': 'xpath',
