@@ -7,10 +7,12 @@ usage
 > - use `sudo apt-get install python-pip` to install pip, or read [this][2] for more info
 > - use `sudo pip install -r required.txt` to install required third packages
 > - (optional) run `python insert_ids.py` to import some initial id in **zhihu_user_data_ids**
-> - use `nohup python start.py &` to start the scrapy
-> - use `sudo kill $(ps aux | grep 'python start.py' | awk '{print $2}')` to kill all process
-> - use `ps aux | grep start.py` to check id pid of the previous program(1st column)
-> - use `sudo kill -9 pid` to stop the program
+> - (not used) use `nohup python start.py &` to start the scrapy
+> - (not used) use `sudo kill $(ps aux | grep 'python start.py' | awk '{print $2}')` to kill all process
+> - (not used) use `ps aux | grep start.py` to check id pid of the previous program(1st column)
+> - (not used) use `sudo kill -9 pid` to stop the program
+> - use `supervisord` in current work directory to start the program
+> - open `http://localhost:9001` with user/password in supervisord.conf to check status
 
 
 development
