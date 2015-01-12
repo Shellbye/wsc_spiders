@@ -11,10 +11,10 @@
 BOT_NAME = 'wsc'
 DEBUG = False
 
-SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders']
+SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders', 'kanzhun.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-IP = "localhost"
+IP = "192.168.2.222"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
