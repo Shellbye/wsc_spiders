@@ -271,7 +271,7 @@ class UserProfileSpider(scrapy.Spider):
         user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': user_data_id})
         if not user:
             UserProfileSpider.zhihu_user_data_ids.insert({'user_data_id': user_data_id,
-                                        "fetched": True,
+                                        "fetched": False,
                                         "crawled_successfully": False,
                                         "crawled_count": 1,
                                         "last_crawled_time": time.strftime("%Y-%m-%d:%H:%M:%S")})
