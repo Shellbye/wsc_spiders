@@ -7,8 +7,8 @@ from scrapy.contrib.spiders import CrawlSpider
 from scrapy.http import Request
 from scrapy import log
 
-from kanzhun.items import KanZhunItem
-from kanzhun.items import JobItem
+from ..items import KanZhunItem
+from ..items import JobItem
 
 
 class KanzhunSpider(CrawlSpider):
