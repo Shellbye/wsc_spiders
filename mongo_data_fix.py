@@ -30,3 +30,7 @@ def process():
 if __name__ == "__main__":
     process()
     print "leaving"
+
+
+# Or simply use the MongoDB shell command
+#   `db.zhihu_user_data_ids.update({"crawled_successfully": false}, {$set:{"fetched": false}}, { multi: true })`
