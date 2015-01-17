@@ -38,6 +38,7 @@ class SpiderControl():
 
 def start():
     zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
+    user_profile = MongoClient(IP, 27017)[DB]['user_profile']
     count = 0
     while True:
         count += 1
@@ -60,6 +61,9 @@ def start():
         )
         if not user:
             break
+        the_user = user_profile.find({"user_data_id": user['user_data_id']})
+        if the_user.count() > 0:
+            continue
         sc = SpiderControl()
         sc.setup_spider(user['user_data_id'])
         if count >= 500:
