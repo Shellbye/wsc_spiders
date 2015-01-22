@@ -49,7 +49,7 @@ EXTENSIONS = {
     'scrapy.telnet.TelnetConsole': None,
 }
 
-if DEBUG:
-    pass
-else:
-    DOWNLOAD_DELAY = 1
+# if DEBUG:
+#     pass
+# else:
+#     DOWNLOAD_DELAY = 1
