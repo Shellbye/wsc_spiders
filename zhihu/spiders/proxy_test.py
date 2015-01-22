@@ -8,13 +8,16 @@ class ZhihuItem(scrapy.Item):
 
 class ProxyTestSpider(scrapy.Spider):
     name = "proxy_test"
-    allowed_domains = ["ip.chinaz.com"]
+    allowed_domains = ["ip.cn"]
     start_urls = (
-        'http://ip.chinaz.com/',
+        'http://www.ip.cn/',
     )
     count = 0
 
     def parse(self, response):
         if 'proxy' in response.request.meta:
             print "meta proxy:" + response.request.meta['proxy']
-        print response.xpath("//strong[@class='red']/text()")[0].extract()
+        if response.xpath("//div[@id='result']/div/p/code/text()"):
+            print response.xpath("//div[@id='result']/div/p/code/text()")[0].extract()
+        else:
+            print "list out of index"
