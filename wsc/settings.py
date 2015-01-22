@@ -9,7 +9,7 @@
 #
 
 BOT_NAME = 'wsc'
-DEBUG = True
+DEBUG = False
 
 SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders', 'kanzhun.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
