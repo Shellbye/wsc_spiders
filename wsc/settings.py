@@ -9,7 +9,7 @@
 #
 
 BOT_NAME = 'wsc'
-DEBUG = False
+DEBUG = True
 
 SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders', 'kanzhun.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
@@ -27,13 +27,18 @@ ITEM_PIPELINES = {
 }
 
 LOG_FILE = 'wsc.log'
-LOG_LEVEL = 'INFO'
+if DEBUG:
+    LOG_LEVEL = 'DEBUG'
+else:
+    LOG_LEVEL = 'INFO'
 
 COOKIES_ENABLES = True
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    'wsc.rotate_useragent.RotateUserAgentMiddleware': 400
+    'wsc.rotate_useragent.RotateUserAgentMiddleware': 400,
+    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 500,
+    'wsc.proxy.ProxyMiddleware': 510,
 }
 
 WEBSERVICE_RESOURCES = {
