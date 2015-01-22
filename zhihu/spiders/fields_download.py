@@ -6,18 +6,22 @@ class FieldsDownload(object):
         'vote_count': {
             'method': 'xpath',
             'params': "//i[@class='zm-profile-icon zm-profile-icon-vote']/following-sibling::span/strong/text()",
+            'default': 0,
         },
         'thank_count': {
             'method': 'xpath',
             'params': "//i[@class='zm-profile-icon zm-profile-icon-thank']/following-sibling::span/strong/text()",
+            'default': 0,
         },
         'fav_count': {
             'method': 'xpath',
             'params': "//i[@class='zm-profile-icon zm-profile-icon-fav']/following-sibling::span/strong/text()",
+            'default': 0,
         },
         'share_count': {
             'method': 'xpath',
             'params': "//i[@class='zm-profile-icon zm-profile-icon-share']/following-sibling::span/strong/text()",
+            'default': 0,
         },
     }
     user_profile_list_fields = {
@@ -29,45 +33,55 @@ class FieldsDownload(object):
         'answer_id': {
             'method': 'xpath',
             'params': "descendant::h2/a/@href",
+            'default': "",
         },
         'answer_title': {
             'method': 'xpath',
             'params': "descendant::h2/a/text()",
+            'default': "",
         },
         'answer_bio': {
             'method': 'xpath',
             'params': "descendant::h3[@class='zm-item-answer-author-wrap']/strong/@title",
+            'default': "",
         },
         'answer_vote_up': {
             'method': 'xpath',
             'params': "descendant::a[@class='zm-item-vote-count']/text()",
+            'default': 0,
         },
         'answer_time': {
             'method': 'xpath',
             'params': "descendant::a[@class='answer-date-link meta-item' or "
                       "@class='answer-date-link last_updated meta-item']/text()",
+            'default': "",
         },
     }
     user_question_fields = {
         'question_id': {
             'method': 'xpath',
             'params': "descendant::a[@class='question_link']/@href",
+            'default': "",
         },
         'question_title': {
             'method': 'xpath',
             'params': "descendant::a[@class='question_link']/text()",
+            'default': "",
         },
         'question_answer_count': {
             'method': 'xpath',
             'params': "descendant::div[@class='meta zg-gray']/span[1]/following-sibling::text()",
+            'default': 0,
         },
         'question_follower_count': {
             'method': 'xpath',
             'params': "descendant::div[@class='meta zg-gray']/span[2]/following-sibling::text()",
+            'default': 0,
         },
         'question_view_count': {
             'method': 'xpath',
             'params': "descendant::div[@class='zm-profile-vote-num']/text()",
+            'default': 0,
         },
     }
     user_profile_fields = {

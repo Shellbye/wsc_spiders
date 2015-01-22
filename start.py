@@ -9,7 +9,7 @@ from zhihu.spiders.user_profile import UserProfileSpider
 from scrapy.utils.project import get_project_settings
 from pymongo import MongoClient
 
-from wsc.settings import IP, DB
+from wsc.settings import IP, DB, DEBUG
 
 
 class SpiderControl():
@@ -66,7 +66,11 @@ def start():
             continue
         sc = SpiderControl()
         sc.setup_spider(user['user_data_id'])
-        if count >= 500:
+        if DEBUG:
+            ceil = 3
+        else:
+            ceil = 500
+        if count >= ceil:
             break
     log.start()
     reactor.run()

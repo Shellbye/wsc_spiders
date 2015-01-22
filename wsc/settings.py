@@ -14,7 +14,7 @@ DEBUG = True
 SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders', 'kanzhun.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-IP = "192.168.2.222"
+IP = "121.48.175.6"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
