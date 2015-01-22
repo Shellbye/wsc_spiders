@@ -13,7 +13,8 @@ def fetch_ips():
         for ip in ips:
             f.write(ip)
 
-if __name__ == "__main__":
+
+def prepare_fetch():
     for i in range(7, 4000 / 5):
         logging.log(logging.INFO, "fetching the %s time" % i)
         time.sleep(2)
@@ -21,3 +22,14 @@ if __name__ == "__main__":
             fetch_ips()
         except Exception, e:
             logging.log(logging.ERROR, e.message)
+
+
+def process_ip():
+    with open("proxy_ips.txt", 'r') as f:
+        for line in f:
+            print "            " + "'" + line.strip() + "'" + ","
+
+
+if __name__ == "__main__":
+    # prepare_fetch()
+    process_ip()
