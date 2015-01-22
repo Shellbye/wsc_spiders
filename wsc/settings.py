@@ -38,7 +38,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
     'wsc.rotate_useragent.RotateUserAgentMiddleware': 400,
     'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 500,
-    'wsc.proxy.ProxyMiddleware': 510,
+    # 'wsc.proxy.ProxyMiddleware': 510,
 }
 
 WEBSERVICE_RESOURCES = {
@@ -49,7 +49,7 @@ EXTENSIONS = {
     'scrapy.telnet.TelnetConsole': None,
 }
 
-# if DEBUG:
-#     pass
-# else:
-#     DOWNLOAD_DELAY = 1
+if DEBUG:
+    pass
+else:
+    DOWNLOAD_DELAY = 1
