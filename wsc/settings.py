@@ -30,7 +30,7 @@ LOG_FILE = 'wsc.log'
 if DEBUG:
     LOG_LEVEL = 'DEBUG'
 else:
-    LOG_LEVEL = 'INFO'
+    LOG_LEVEL = 'WARNING'
 
 COOKIES_ENABLES = True
 
