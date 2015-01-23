@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 __author__ = 'shellbye'
 import time
+import logging
+logging.basicConfig(filename='start.err.log', level=logging.DEBUG)
 
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
@@ -27,8 +29,10 @@ def start():
     user_profile = MongoClient(IP, 27017)[DB]['user_profile']
     user = zhihu_user_data_ids.find_one({"fetched": False})
     if not user:
+        logging.log(logging.WARNING, "no more fetched:false")
         user = zhihu_user_data_ids.find_one({"crawled_successfully": False})
         if not user:
+            logging.log(logging.WARNING, "no more crawled_successfully:false")
             raise TypeError("No data available in Mongo")
     crawled_count = user['crawled_count'] + 1
     zhihu_user_data_ids.update(
@@ -48,6 +52,7 @@ def start():
     if the_user.count() > 0:
         return
     setup_spider(user['user_data_id'])
+    logging.log(logging.INFO, "setup " + user['user_data_id'])
     log.start()
     reactor.run()
 
