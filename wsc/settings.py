@@ -10,11 +10,15 @@
 
 BOT_NAME = 'wsc'
 DEBUG = False
+PROXY_ENABLED = False
 
 SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders', 'kanzhun.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-IP = "121.48.175.6"
+if DEBUG:
+    IP = "127.0.0.1"
+else:
+    IP = "121.48.175.6"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
@@ -41,6 +45,9 @@ DOWNLOADER_MIDDLEWARES = {
     # 'wsc.proxy.ProxyMiddleware': 510,
 }
 
+if PROXY_ENABLED:
+    DOWNLOADER_MIDDLEWARES['wsc.proxy.ProxyMiddleware'] = 510
+
 WEBSERVICE_RESOURCES = {
     'wsc.services.ItemResource.ItemCountResource': 1,
 }
@@ -52,4 +59,7 @@ EXTENSIONS = {
 if DEBUG:
     pass
 else:
-    DOWNLOAD_DELAY = 1
+    if PROXY_ENABLED:
+        pass
+    else:
+        DOWNLOAD_DELAY = 1
