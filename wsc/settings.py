@@ -18,7 +18,7 @@ NEWSPIDER_MODULE = 'wsc.spiders'
 if DEBUG:
     IP = "127.0.0.1"
 else:
-    IP = "121.48.175.6"
+    IP = "121.48.175.146"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
