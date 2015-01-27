@@ -9,8 +9,9 @@
 #
 
 BOT_NAME = 'wsc'
-DEBUG = False
+DEBUG = True
 PROXY_ENABLED = False
+NEED_LOGIN = False
 
 SPIDER_MODULES = ['wsc.spiders',
                   'zhihu.spiders',
@@ -19,11 +20,10 @@ SPIDER_MODULES = ['wsc.spiders',
                   'zhongkao.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-IP = "127.0.0.1"
+IP = "192.168.2.222"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
-MONGODB_COLLECTION = 'wsc'
 
 DB = MONGODB_DATABASE
 
@@ -37,7 +37,7 @@ if DEBUG:
 else:
     LOG_LEVEL = 'WARNING'
 
-COOKIES_ENABLES = True
+COOKIES_ENABLES = NEED_LOGIN
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
