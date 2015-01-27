@@ -17,7 +17,7 @@ SPIDER_MODULES = ['wsc.spiders',
                   'zhihu.spiders',
                   'lagou.spiders',
                   'kanzhun.spiders',
-                  'zhongkao.spiders']
+                  'school.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
 IP = "192.168.2.222"
