@@ -12,7 +12,11 @@ BOT_NAME = 'wsc'
 DEBUG = False
 PROXY_ENABLED = False
 
-SPIDER_MODULES = ['wsc.spiders', 'zhihu.spiders', 'lagou.spiders', 'kanzhun.spiders']
+SPIDER_MODULES = ['wsc.spiders',
+                  'zhihu.spiders',
+                  'lagou.spiders',
+                  'kanzhun.spiders',
+                  'zhongkao.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
 IP = "127.0.0.1"
