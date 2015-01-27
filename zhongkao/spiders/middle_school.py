@@ -48,7 +48,7 @@ class MiddleSchoolSpider(scrapy.Spider):
         h['province'] = response.xpath("//nav[@class='wrapper tm10']/a[2]/text()")[0].extract()
         h['school_stage'] = 'middle_school'
         h['school_type'] = school_intro.xpath("descendant::table/tr[1]/td[1]/text()")[0].extract()
-        h['full_name'] = school_intro.xpath("descendant::table/tr[1]/td[2]/a/text()")[0].extract()
+        h['full_name'] = school_intro.xpath("descendant::h2/a[1]/text()")[0].extract()
         h['class_type'] = school_intro.xpath("descendant::table/tr[2]/td[1]/text()")[0].extract()
         h['headmaster'] = school_intro.xpath("descendant::table/tr[2]/td[2]/text()")[0].extract()
         h['accommodation'] = school_intro.xpath("descendant::table/tr[3]/td[1]/text()")[0].extract()
