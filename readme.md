@@ -11,6 +11,7 @@ usage
 > - (not used) use `sudo kill $(ps aux | grep 'python start.py' | awk '{print $2}')` to kill all process
 > - (not used) use `ps aux | grep start.py` to check id pid of the previous program(1st column)
 > - (not used) use `sudo kill -9 pid` to stop the program
+> - user `kill -9 $(ps aux | grep 'supervisord' | awk '{print $2}')` to kill supervisord
 > - use `supervisord` in current work directory to start the program
 > - open `http://localhost:9001` with user/password in supervisord.conf to check status
 
