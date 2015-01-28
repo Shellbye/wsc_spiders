@@ -20,7 +20,7 @@ SPIDER_MODULES = ['wsc.spiders',
                   'school.spiders']
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-IP = "192.168.2.222"
+IP = "127.0.0.1"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
 MONGODB_DATABASE = 'scrapy2'
