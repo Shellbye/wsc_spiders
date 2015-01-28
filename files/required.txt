@@ -1,4 +1,4 @@
-scrapy==0.24.4
+lxml
 pyOpenSSL==0.14
 pymongo==2.7.2
 scrapy-mongodb==0.7.3
@@ -7,5 +7,7 @@ six
 cssselect
 queuelib
 w3lib
-twisted
 cryptography
+zope.interface
+twisted
+scrapy==0.24.4
