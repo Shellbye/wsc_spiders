@@ -11,3 +11,4 @@ cryptography
 zope.interface
 twisted
 scrapy==0.24.4
+watchdog
