@@ -6,7 +6,7 @@ logging.basicConfig(filename='start.err.log', level=logging.DEBUG)
 from twisted.internet import reactor
 from scrapy.crawler import Crawler
 from scrapy import log, signals
-from zhongkao.spiders.middle_school import MiddleSchoolSpider
+from school.spiders.middle_school import MiddleSchoolSpider
 from scrapy.utils.project import get_project_settings
 
 
