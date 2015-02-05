@@ -11,13 +11,15 @@
 BOT_NAME = 'wsc'
 DEBUG = True
 PROXY_ENABLED = False
-NEED_LOGIN = False
+NEED_LOGIN = True
 
 SPIDER_MODULES = ['wsc.spiders',
                   'zhihu.spiders',
                   'lagou.spiders',
                   'kanzhun.spiders',
-                  'school.spiders']
+                  'school.spiders',
+                  'sina.spiders',
+                  ]
 NEWSPIDER_MODULE = 'wsc.spiders'
 
 IP = "127.0.0.1"
@@ -38,6 +40,7 @@ else:
     LOG_LEVEL = 'WARNING'
 
 COOKIES_ENABLES = NEED_LOGIN
+COOKIES_DEBUG = True
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
