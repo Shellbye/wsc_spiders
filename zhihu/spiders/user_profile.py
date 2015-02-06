@@ -7,13 +7,12 @@ import urllib2
 from scrapy.http import Request
 from scrapy import log
 from scrapy import signals
-from scrapy.selector import SelectorList, Selector
+from scrapy.selector import SelectorList
 from scrapy.xlib.pydispatch import dispatcher
-from pymongo import MongoClient
 
 from zhihu.items import *
 from fields_download import FieldsDownload
-from wsc.settings import IP, DB, DEBUG
+from wsc.settings import DEBUG
 
 
 class UserProfileSpider(scrapy.Spider):
@@ -22,17 +21,18 @@ class UserProfileSpider(scrapy.Spider):
         collection = "user_profile_debug"
     else:
         collection = "user_profile"
-    zhihu_user_data_ids = MongoClient(IP, 27017)[DB]['zhihu_user_data_ids']
     unique_key = 'user_data_id'
     allowed_domains = ["zhihu.com"]
     start_urls = (
         'http://www.zhihu.com/login',
     )
 
-    def __init__(self, user_data_id='18c79c6cc76ce8db8518367b46353a54'):
+    def __init__(self, user_data_id='18c79c6cc76ce8db8518367b46353a54',
+                 zhihu_user_data_ids=None):
         super(UserProfileSpider, self).__init__()
         dispatcher.connect(self.closed, signals.spider_closed)
         self.user_data_id = user_data_id
+        self.zhihu_user_data_ids = zhihu_user_data_ids
         log.msg("start crawl " + user_data_id, level=log.INFO)
 
     def closed(self, spider):
@@ -130,9 +130,9 @@ class UserProfileSpider(scrapy.Spider):
                       meta={
                           'item': item,
                       })
-        user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': self.user_data_id})
+        user = self.zhihu_user_data_ids.find_one({'user_data_id': self.user_data_id})
         if user:
-            UserProfileSpider.zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
+            self.zhihu_user_data_ids.update(user, {"$set": {"crawled_successfully": True}})
 
     def parse_followed_columns(self, response):
         user_item = response.meta['item']
@@ -266,18 +266,17 @@ class UserProfileSpider(scrapy.Spider):
         else:
             return element
 
-    @staticmethod
-    def insert_new_or_update_user_data_id(user_data_id):
-        user = UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': user_data_id})
+    def insert_new_or_update_user_data_id(self, user_data_id):
+        user = self.zhihu_user_data_ids.find_one({'user_data_id': user_data_id})
         if not user:
-            UserProfileSpider.zhihu_user_data_ids.insert({'user_data_id': user_data_id,
+            self.zhihu_user_data_ids.insert({'user_data_id': user_data_id,
                                                           "fetched": False,
                                                           "crawled_successfully": False,
                                                           "crawled_count": 0,
                                                           "last_crawled_time": None})
         else:
             crawled_count = user['crawled_count'] + 1
-            UserProfileSpider.zhihu_user_data_ids.update(
+            self.zhihu_user_data_ids.update(
                 user,
                 {
                     "$set":
@@ -289,9 +288,8 @@ class UserProfileSpider(scrapy.Spider):
                 }
             )
 
-    @staticmethod
-    def user_need_to_crawl(user_data_id):
-        return UserProfileSpider.zhihu_user_data_ids.find_one({'user_data_id': user_data_id, "fetched": False})
+    def user_need_to_crawl(self, user_data_id):
+        return self.zhihu_user_data_ids.find_one({'user_data_id': user_data_id, "fetched": False})
 
     @staticmethod
     def get_more_columns(user_data_id, _xsrf, offset=20):
