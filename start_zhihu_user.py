@@ -24,8 +24,8 @@ class SpiderControl():
         if self.crawlers_running == 0:
             reactor.stop()
 
-    def setup_spider(self, user_data_id):
-        spider = UserProfileSpider(user_data_id=user_data_id)
+    def setup_spider(self, user_data_id, zhihu_user_data_ids):
+        spider = UserProfileSpider(user_data_id=user_data_id, zhihu_user_data_ids=zhihu_user_data_ids)
         settings = get_project_settings()
         crawler = Crawler(settings)
         crawler.signals.connect(self.remove_crawler, signal=signals.spider_closed)
@@ -64,7 +64,7 @@ def start():
         if the_user.count() > 0:
             continue
         sc = SpiderControl()
-        sc.setup_spider(user['user_data_id'])
+        sc.setup_spider(user['user_data_id'], zhihu_user_data_ids)
         if DEBUG:
             ceil = 3
         else:

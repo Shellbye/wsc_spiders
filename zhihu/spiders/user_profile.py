@@ -186,7 +186,7 @@ class UserProfileSpider(scrapy.Spider):
         followers_data_ids = []
         for f in followers:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
+            self.insert_new_or_update_user_data_id(user_data_id)
             followers_data_ids.append(user_data_id)
         user_item['followers'] = followers_data_ids
         return user_item
@@ -198,7 +198,7 @@ class UserProfileSpider(scrapy.Spider):
         followees_data_ids = []
         for f in followees:
             user_data_id = f.xpath("descendant::div[@class='zg-right']/button/@data-id")[0].extract()
-            UserProfileSpider.insert_new_or_update_user_data_id(user_data_id)
+            self.insert_new_or_update_user_data_id(user_data_id)
             followees_data_ids.append(user_data_id)
         user_item['followees'] = followees_data_ids
         return user_item
