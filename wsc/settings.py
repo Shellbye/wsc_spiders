@@ -23,10 +23,10 @@ SPIDER_MODULES = ['wsc.spiders',
                   ]
 NEWSPIDER_MODULE = 'wsc.spiders'
 
-IP = "192.168.2.222"
+IP = "192.168.3.222"
 
 MONGODB_URI = 'mongodb://' + IP + ':27017'
-MONGODB_DATABASE = 'scrapy2'
+MONGODB_DATABASE = 'user'
 
 DB = MONGODB_DATABASE
 
@@ -61,4 +61,4 @@ EXTENSIONS = {
     'scrapy.telnet.TelnetConsole': None,
 }
 
-DOWNLOAD_DELAY = 10
+# DOWNLOAD_DELAY = 10
