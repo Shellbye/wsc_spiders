@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import urllib
 import scrapy
 from scrapy.http import Request
 from scrapy import log
@@ -33,8 +34,8 @@ class JdSpider(scrapy.Spider):
                         current_keyword_text = current_keyword_xpath.xpath("descendant::text()").extract()[0]
                         for page in range(1, 30):
                             current_keywords_link = u"http://www.lagou.com/jobs/list_" \
-                                                    + current_keyword_text + u"?kd=" \
-                                                    + current_keyword_text + \
+                                                    + urllib.quote(current_keyword_text) + u"?kd=" \
+                                                    + urllib.quote(current_keyword_text) + \
                                                     u"&spc=1&pl=&gj=&xl=&yx=&gx=&st=" \
                                                     u"&labelWords=label%2Clabel&lc=" \
                                                     u"&workAddress=&city=全国&requestId=" \
